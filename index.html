@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JoshStream Web | Transform Videos into Interactive 3D & AR Experiences</title>
+  <meta name="description" content="Production-ready AI SaaS platform that converts standard product videos into photorealistic 3D models and instant augmented reality (AR) shopping experiences for e-commerce.">
+  <meta name="keywords" content="3D Commerce, AI Video to 3D, WebAR, NeRF 3D Reconstruction, Shopify 3D Models, Spatial E-Commerce">
+  <meta property="og:title" content="JoshStream Web - Turn Video into Interactive 3D & AR">
+  <meta property="og:description" content="Boost conversions by 94% and reduce returns by 40% with AI-generated 3D product experiences.">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Three.js Library via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Firebase & Firestore SDKs via CDN for Live Backend -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  
+  <!-- Firebase Project Config -->
+  <script src="js/firebase-config.js"></script>
+</head>
+<body>
+
+  <!-- Sticky Navbar -->
+  <header>
+    <nav class="navbar" aria-label="Main Navigation">
+      <a class="brand-logo" data-navigate="home">
+        <div class="brand-icon">J</div>
+        <span>JoshStream<span style="color: var(--accent-cyan);">.Web</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a class="nav-link active" data-navigate="home">Home</a></li>
+        <li><a class="nav-link" data-navigate="features">Features</a></li>
+        <li><a class="nav-link" data-navigate="pricing">Pricing</a></li>
+        <li><a class="nav-link" data-navigate="use-cases">Use Cases</a></li>
+        <li><a class="nav-link" data-navigate="about">About</a></li>
+        <li><a class="nav-link" data-navigate="blog">Blog</a></li>
+        <li><a class="nav-link" data-navigate="contact">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary" data-navigate="auth">Sign In</button>
+        <button class="btn btn-cyan" data-navigate="auth">Start Free Trial ➔</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Views Container -->
+  <main>
+
+    <!-- ========================================== -->
+    <!-- 🏠 1. HOMEPAGE VIEW                        -->
+    <!-- ========================================== -->
+    <section id="view-home" class="view-container active-view">
+      <div class="container">
+        
+        <!-- Hero Section -->
+        <div class="hero-grid">
+          <div class="hero-content">
+            <div class="section-tag">
+              <span class="pulse-dot"></span> NEXT-GEN SPATIAL AI 2.0
+            </div>
+            <h1 class="hero-headline">
+              Transform Videos into <span class="text-gradient">Interactive 3D & AR</span> Experiences
+            </h1>
+            <p class="hero-subhead">
+              Turn standard smartphone product videos into high-converting 3D meshes and instant WebAR shopping experiences in seconds with AI.
+            </p>
+            
+            <div class="hero-cta-group">
+              <button class="btn btn-primary" data-navigate="auth">
+                Start Free Trial ➔
+              </button>
+              <button class="btn btn-secondary" onclick="document.getElementById('sim-section').scrollIntoView({behavior: 'smooth'})">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Watch AI Sandbox Demo
+              </button>
+            </div>
+
+            <div class="hero-badge-group">
+              <div class="badge-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>No 3D CAD Skills Required</span>
+              </div>
+              <div class="badge-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>1-Click Shopify & Webflow Sync</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live 3D Interactive Canvas Window -->
+          <div>
+            <div class="canvas-card">
+              <div class="canvas-floating-badge">
+                <span class="pulse-dot"></span> REAL-TIME WEBGL RENDER
+              </div>
+              
+              <canvas id="hero-3d-canvas" class="canvas-viewport"></canvas>
+
+              <div class="canvas-controls">
+                <button class="ctrl-btn" onclick="if(window.heroViewer) window.heroViewer.loadProductModel('sneaker')">Sneaker</button>
+                <button class="ctrl-btn" onclick="if(window.heroViewer) window.heroViewer.loadProductModel('chair')">Chair</button>
+                <button class="ctrl-btn" onclick="if(window.heroViewer) window.heroViewer.loadProductModel('watch')">Watch</button>
+                <button class="ctrl-btn" onclick="if(window.heroViewer) window.heroViewer.toggleWireframe()">Wireframe</button>
+                <button class="ctrl-btn" onclick="if(window.heroViewer) window.heroViewer.setMaterialColor('#00F0FF')">Cyan</button>
+                <button class="ctrl-btn" onclick="if(window.heroViewer) window.heroViewer.setMaterialColor('#8B5CF6')">Purple</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Proof Brand Logos -->
+        <div class="brand-section">
+          <p class="brand-title">POWERING SPATIAL COMMERCE FOR TOP GLOBAL BRANDS</p>
+          <div class="brand-grid">
+            <span class="brand-item">NIKE // SPATIAL</span>
+            <span class="brand-item">SAMSUNG 3D</span>
+            <span class="brand-item">WAYFAIR LABS</span>
+            <span class="brand-item">SEPHORA AR</span>
+            <span class="brand-item">IKEA PLACE</span>
+          </div>
+        </div>
+
+        <!-- 3-Step Process -->
+        <div style="margin: 6rem 0;">
+          <div class="section-header">
+            <span class="section-tag">AUTOMATED WORKFLOW</span>
+            <h2 class="section-title">How JoshStream Web Works</h2>
+            <p class="section-desc">From raw smartphone footage to embeddable 3D WebAR in 3 simple steps.</p>
+          </div>
+
+          <div class="steps-grid">
+            <div class="step-card glass-card">
+              <div class="step-number">01</div>
+              <div class="step-icon-wrap">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              </div>
+              <h3 class="step-title">1. Upload Product Video</h3>
+              <p class="step-desc">Record a 30-second turntable video of your product using any smartphone or camera. No specialized rigs or LiDAR required.</p>
+            </div>
+
+            <div class="step-card glass-card">
+              <div class="step-number">02</div>
+              <div class="step-icon-wrap">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+              </div>
+              <h3 class="step-title">2. AI Reconstruction</h3>
+              <p class="step-desc">Our neural radiance field (NeRF) AI extracts keyframes, computes spatial point clouds, and bakes high-fidelity 4K textures in under 3 minutes.</p>
+            </div>
+
+            <div class="step-card glass-card">
+              <div class="step-number">03</div>
+              <div class="step-icon-wrap">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              </div>
+              <h3 class="step-title">3. Embed Anywhere</h3>
+              <p class="step-desc">Copy 1-line HTML iframe or native Web Component code into your Shopify, WooCommerce, or Webflow product pages instantly.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive AI Video-to-3D Simulator Sandbox -->
+        <div id="sim-section" class="simulator-container">
+          <div class="sim-grid">
+            <div>
+              <span class="section-tag">LIVE INTERACTIVE SANDBOX</span>
+              <h2 class="section-title" style="font-size: 2.2rem;">Try Video-to-3D AI Generation</h2>
+              <p class="section-desc" style="font-size: 1rem; margin-bottom: 1.5rem;">Select a sample product video or drop your footage below to simulate real-time AI spatial reconstruction.</p>
+              
+              <div id="sim-dropzone" class="dropzone-box">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" style="margin-bottom: 0.8rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <h4 style="font-size: 1.1rem; margin-bottom: 0.3rem;">Click to Upload Product Video</h4>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Supports MP4, MOV, WEBM (Max 500MB)</p>
+              </div>
+
+              <p class="sample-videos-label">Or test with pre-loaded sample product videos:</p>
+              <div class="sample-chips">
+                <button class="chip-btn active" data-sample="Sneaker Video">👟 Sneaker Video</button>
+                <button class="chip-btn" data-sample="Lounge Chair">🛋️ Lounge Chair</button>
+                <button class="chip-btn" data-sample="Smartwatch">⌚ Smartwatch</button>
+                <button class="chip-btn" data-sample="Spatial Headset">🥽 Spatial Headset</button>
+              </div>
+            </div>
+
+            <div>
+              <div style="background: rgba(12, 10, 30, 0.8); border: 1px solid var(--border-glass); padding: 2rem; border-radius: var(--radius-md);">
+                <h4 style="font-size: 1.1rem; color: #FFF; margin-bottom: 1rem;">Neural Processing Pipeline</h4>
+                
+                <div class="progress-pipeline">
+                  <div class="pipe-step active">
+                    <div class="pipe-icon">➔</div>
+                    <span>1. 60 FPS Keyframe Sampling & Camera Tracking</span>
+                  </div>
+                  <div class="pipe-step">
+                    <div class="pipe-icon">•</div>
+                    <span>2. NeRF Point Cloud & Volumetric Depth Calculation</span>
+                  </div>
+                  <div class="pipe-step">
+                    <div class="pipe-icon">•</div>
+                    <span>3. Gaussian Splatting & Photorealistic Texture Baking</span>
+                  </div>
+                  <div class="pipe-step">
+                    <div class="pipe-icon">•</div>
+                    <span>4. GLTF/USDZ Export & WebAR Packaging</span>
+                  </div>
+                </div>
+
+                <div class="progress-bar-bg">
+                  <div id="sim-progress-fill" class="progress-bar-fill"></div>
+                </div>
+                <p id="sim-progress-text" style="color: var(--accent-cyan); font-size: 0.88rem; margin-top: 0.8rem; font-weight: 500;">
+                  Ready. Click a sample video to start AI reconstruction.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benefits & ROI Section -->
+        <div style="margin: 6rem 0;">
+          <div class="section-header">
+            <span class="section-tag">PROVEN CONVERSION IMPACT</span>
+            <h2 class="section-title">Measurable Results for E-Commerce</h2>
+            <p class="section-desc">Empirical performance data aggregated across 500+ active JoshStream merchant stores.</p>
+          </div>
+
+          <div class="benefits-grid">
+            <div class="roi-card glass-card">
+              <div class="roi-number">+94%</div>
+              <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Conversion Boost</h3>
+              <p style="color: var(--text-muted); font-size: 0.92rem;">Shoppers who interact with 3D product models convert at nearly double the rate of standard image viewers.</p>
+            </div>
+
+            <div class="roi-card glass-card">
+              <div class="roi-number">-40%</div>
+              <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Return Reduction</h3>
+              <p style="color: var(--text-muted); font-size: 0.92rem;">True-to-scale WebAR try-on eliminates sizing surprises and drastically reduces costly return shipping.</p>
+            </div>
+
+            <div class="roi-card glass-card">
+              <div class="roi-number">250%</div>
+              <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Engagement Time</h3>
+              <p style="color: var(--text-muted); font-size: 0.92rem;">Buyers spend an average of 4.2 minutes manipulating 3D models and testing colors in their space.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonials -->
+        <div style="margin: 6rem 0;">
+          <div class="section-header">
+            <span class="section-tag">WHAT MERCHANTS SAY</span>
+            <h2 class="section-title">Loved by Modern E-Commerce Leaders</h2>
+          </div>
+
+          <div class="features-grid">
+            <div class="glass-card" style="padding: 2rem;">
+              <div style="color: #FBBF24; font-size: 1.2rem; margin-bottom: 1rem;">★★★★★</div>
+              <p style="color: var(--text-main); font-style: italic; margin-bottom: 1.5rem;">"JoshStream Web completely transformed our sneaker store. We uploaded 40 product videos and had full 3D models live on Shopify within 2 hours. Our add-to-cart rate jumped by 82% in week one!"</p>
+              <div style="display: flex; align-items: center; gap: 0.8rem;">
+                <div style="width: 42px; height: 42px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">JM</div>
+                <div>
+                  <h4 style="font-size: 0.98rem;">Jason Miller</h4>
+                  <p style="font-size: 0.82rem; color: var(--text-muted);">Founder @ KicksVault</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-card" style="padding: 2rem;">
+              <div style="color: #FBBF24; font-size: 1.2rem; margin-bottom: 1rem;">★★★★★</div>
+              <p style="color: var(--text-main); font-style: italic; margin-bottom: 1.5rem;">"The instant AR QR code feature is incredible. Customers can scan a code on their desktop and project our luxury sofas straight into their living room. Returns dropped by 50%!"</p>
+              <div style="display: flex; align-items: center; gap: 0.8rem;">
+                <div style="width: 42px; height: 42px; background: var(--accent-cyan); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">SC</div>
+                <div>
+                  <h4 style="font-size: 0.98rem;">Sophia Chen</h4>
+                  <p style="font-size: 0.82rem; color: var(--text-muted);">VP Design @ Haven Home</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-card" style="padding: 2rem;">
+              <div style="color: #FBBF24; font-size: 1.2rem; margin-bottom: 1rem;">★★★★★</div>
+              <p style="color: var(--text-main); font-style: italic; margin-bottom: 1.5rem;">"Before JoshStream Web, 3D modeling cost us $500 per item. Now we convert short iPhone videos for a fraction of the cost with zero quality compromise. Pure magic!"</p>
+              <div style="display: flex; align-items: center; gap: 0.8rem;">
+                <div style="width: 42px; height: 42px; background: var(--accent-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">DL</div>
+                <div>
+                  <h4 style="font-size: 0.98rem;">David Laurent</h4>
+                  <p style="font-size: 0.82rem; color: var(--text-muted);">Head of Digital @ Lumina Watch Co.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Final Call to Action -->
+        <div class="glass-card" style="padding: 4rem 3rem; text-align: center; background: radial-gradient(circle at center, #271E6B 0%, #0B0A1C 100%); margin-top: 6rem;">
+          <h2 style="font-size: 2.8rem; margin-bottom: 1rem;">Ready to Upgrade Your Product Experience?</h2>
+          <p style="font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2.5rem auto;">
+            Join 500+ top e-commerce brands using JoshStream Web to turn standard videos into high-converting spatial experiences.
+          </p>
+          <div style="display: flex; gap: 1rem; justify-content: center;">
+            <button class="btn btn-cyan" data-navigate="auth">Start 14-Day Free Trial ➔</button>
+            <button class="btn btn-secondary" data-navigate="contact">Book Executive Demo</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- ⚙️ 2. FEATURES PAGE                       -->
+    <!-- ========================================== -->
+    <section id="view-features" class="view-container">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">DEEP FEATURE ENGINE</span>
+          <h2 class="section-title">Built for High-Scale Spatial Commerce</h2>
+          <p class="section-desc">Explore the powerful NeRF reconstruction, WebGL rendering, and no-code store integrations inside JoshStream Web.</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card glass-card">
+            <div class="feature-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            </div>
+            <h3 style="margin-bottom: 0.6rem;">AI 3D Reconstruction</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Automated Gaussian Splatting and NeRF AI converts uncalibrated video frames into sub-millimeter accurate 3D meshes.</p>
+          </div>
+
+          <div class="feature-card glass-card">
+            <div class="feature-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            </div>
+            <h3 style="margin-bottom: 0.6rem;">60 FPS WebGL Rendering</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Ultra-lightweight WebGL engine renders 4K physical material reflections smoothly on desktop and mobile browsers.</p>
+          </div>
+
+          <div class="feature-card glass-card">
+            <div class="feature-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            </div>
+            <h3 style="margin-bottom: 0.6rem;">Instant AR QuickLook</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Zero-install WebAR allows shoppers to project 1:1 true scale products onto floors or tables with 1 tap.</p>
+          </div>
+
+          <div class="feature-card glass-card">
+            <div class="feature-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            </div>
+            <h3 style="margin-bottom: 0.6rem;">Shopify & Woo Apps</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Automated catalog sync automatically matches 3D model IDs to your product variants without touching Liquid or PHP.</p>
+          </div>
+
+          <div class="feature-card glass-card">
+            <div class="feature-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            </div>
+            <h3 style="margin-bottom: 0.6rem;">No-Code Embed Builder</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Customize canvas colors, auto-rotate speeds, hotspots, and call-to-action buttons with our interactive editor.</p>
+          </div>
+
+          <div class="feature-card glass-card">
+            <div class="feature-icon-box">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            </div>
+            <h3 style="margin-bottom: 0.6rem;">Spatial Analytics Dashboard</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Track 3D rotation duration, AR launch rates, hotspot clicks, and direct conversion lift in real-time.</p>
+          </div>
+        </div>
+
+        <!-- Live Embed Builder Code Snippet Teaser -->
+        <div class="glass-card" style="margin-top: 4rem; padding: 3rem;">
+          <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">1-Click Embed Snippet Generator</h3>
+          <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Copy and paste this snippet into any store HTML or web component builder.</p>
+          
+          <pre style="background: rgba(7, 6, 20, 0.9); border: 1px solid var(--border-glass); padding: 1.5rem; border-radius: var(--radius-md); color: var(--accent-cyan); font-family: monospace; font-size: 0.9rem; overflow-x: auto;">
+&lt;!-- JoshStream Web Interactive 3D & AR Component --&gt;
+&lt;script type="module" src="https://cdn.joshstream.web/v2/embed.js"&gt;&lt;/script&gt;
+&lt;joshstream-viewer 
+  model-id="js_sneaker_99482" 
+  auto-rotate="true" 
+  ar-enabled="true"
+  theme="dark"&gt;
+&lt;/joshstream-viewer&gt;</pre>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- 💰 3. PRICING PAGE                        -->
+    <!-- ========================================== -->
+    <section id="view-pricing" class="view-container">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">TRANSPARENT PRICING</span>
+          <h2 class="section-title">Simple, Credit-Based Plans</h2>
+          <p class="section-desc">Scale your 3D product catalog as your store grows. No hidden fees.</p>
+        </div>
+
+        <!-- Monthly / Annual Toggle -->
+        <div class="pricing-toggle-wrap">
+          <span style="font-weight: 600; color: var(--text-muted);">Monthly Billing</span>
+          <div id="pricing-toggle" class="toggle-switch">
+            <div class="toggle-knob"></div>
+          </div>
+          <span style="font-weight: 600; color: #FFF;">Annual Billed</span>
+          <span class="discount-badge">SAVE 20%</span>
+        </div>
+
+        <!-- 3 Pricing Cards -->
+        <div class="pricing-cards-grid">
+          
+          <!-- Starter Tier -->
+          <div class="pricing-card glass-card">
+            <div>
+              <h3 style="font-size: 1.4rem;">Starter</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.3rem;">Ideal for boutique stores & new launches.</p>
+              <div class="plan-price">
+                <span id="price-starter">$49</span><span class="price-period">/month</span>
+              </div>
+              <ul class="feature-list">
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 15 AI Video-to-3D Conversions/mo</li>
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Up to 25,000 WebAR Views/mo</li>
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Shopify & WooCommerce App Sync</li>
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Standard WebGL 3D Viewer</li>
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Email Support (24h)</li>
+              </ul>
+            </div>
+            <button class="btn btn-secondary" style="width: 100%;" data-navigate="auth">Choose Starter</button>
+          </div>
+
+          <!-- Pro Tier (Popular) -->
+          <div class="pricing-card glass-card popular">
+            <span class="popular-tag">MOST POPULAR</span>
+            <div>
+              <h3 style="font-size: 1.4rem;">Pro Growth</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.3rem;">For scaling Shopify Plus & multi-category brands.</p>
+              <div class="plan-price">
+                <span id="price-pro">$149</span><span class="price-period">/month</span>
+              </div>
+              <ul class="feature-list">
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 60 AI Video-to-3D Conversions/mo</li>
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Up to 150,000 WebAR Views/mo</li>
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 4K Gaussian Splatting Photorealism</li>
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Spatial Heatmaps & ROI Dashboard</li>
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Priority Processing & Live Chat</li>
+              </ul>
+            </div>
+            <button class="btn btn-cyan" style="width: 100%;" data-navigate="auth">Start Pro Free Trial ➔</button>
+          </div>
+
+          <!-- Enterprise Tier -->
+          <div class="pricing-card glass-card">
+            <div>
+              <h3 style="font-size: 1.4rem;">Enterprise</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.3rem;">Custom SLAs, dedicated rendering clusters & APIs.</p>
+              <div class="plan-price">
+                <span>Custom</span>
+              </div>
+              <ul class="feature-list">
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Unlimited AI Model Reconstruction</li>
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Dedicated CDN & Custom Subdomain</li>
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Custom ERP & PIM System Integration</li>
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 99.99% Uptime Guarantee & SLA</li>
+                <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Dedicated 3D Engineer Support</li>
+              </ul>
+            </div>
+            <button class="btn btn-secondary" style="width: 100%;" data-navigate="contact">Contact Enterprise Sales</button>
+          </div>
+
+        </div>
+
+        <!-- Interactive Credit Calculator Slider -->
+        <div class="credit-calc-box glass-card">
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <span class="section-tag">CALCULATE YOUR USAGE</span>
+            <h3 style="font-size: 1.8rem; margin-top: 0.5rem;">Custom Usage & Credit Estimator</h3>
+            <p style="color: var(--text-muted);">Adjust the sliders to estimate required credits for your catalog.</p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;">
+            <div>
+              <div class="slider-group">
+                <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.5rem;">
+                  <span>Monthly Video Uploads</span>
+                  <span id="calc-video-val" style="color: var(--accent-cyan);">20 videos/mo</span>
+                </div>
+                <input id="calc-video-slider" type="range" min="5" max="100" value="20" class="range-slider">
+              </div>
+
+              <div class="slider-group">
+                <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.5rem;">
+                  <span>Expected Monthly AR Views</span>
+                  <span id="calc-ar-val" style="color: var(--accent-cyan);">40k AR views/mo</span>
+                </div>
+                <input id="calc-ar-slider" type="range" min="10000" max="200000" step="5000" value="40000" class="range-slider">
+              </div>
+            </div>
+
+            <div style="background: rgba(7, 6, 20, 0.8); border: 1px solid var(--border-purple-glow); padding: 2rem; border-radius: var(--radius-md); text-align: center;">
+              <p style="font-size: 0.9rem; color: var(--text-muted);">RECOMMENDED PLAN</p>
+              <h4 id="calc-recommended-tier" style="font-size: 1.5rem; color: var(--accent-cyan); margin: 0.4rem 0;">Pro Tier (Recommended)</h4>
+              <div id="calc-est-price" style="font-family: var(--font-heading); font-size: 2.8rem; font-weight: 800; color: #FFF;">$149/mo</div>
+              <button class="btn btn-cyan" style="margin-top: 1rem; width: 100%;" data-navigate="auth">Start Free Trial ➔</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- 📦 4. USE CASES PAGE                      -->
+    <!-- ========================================== -->
+    <section id="view-use-cases" class="view-container">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">TAILORED INDUSTRY SOLUTIONS</span>
+          <h2 class="section-title">Designed for Every E-Commerce Vertical</h2>
+          <p class="section-desc">Select an industry below to view real before-and-after conversion comparisons.</p>
+        </div>
+
+        <div class="tabs-nav">
+          <button class="tab-btn usecase-tab active" data-usecase="fashion">👟 Fashion & Apparel</button>
+          <button class="tab-btn usecase-tab" data-usecase="furniture">🛋️ Furniture & Home</button>
+          <button class="tab-btn usecase-tab" data-usecase="electronics">🎧 Electronics & Tech</button>
+          <button class="tab-btn usecase-tab" data-usecase="jewelry">💎 Luxury & Jewelry</button>
+        </div>
+
+        <div id="usecase-detail-container">
+          <!-- Dynamic Content rendered via js/use-cases.js -->
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- 🧑‍💼 5. ABOUT PAGE                          -->
+    <!-- ========================================== -->
+    <section id="view-about" class="view-container">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">OUR MISSION</span>
+          <h2 class="section-title">Pioneering the Spatial Commerce Web</h2>
+          <p class="section-desc">We believe buying online should feel as immersive and accurate as inspecting a product in a physical store.</p>
+        </div>
+
+        <!-- Vision & Ethos Grid -->
+        <div class="features-grid" style="margin-bottom: 5rem;">
+          <div class="glass-card" style="padding: 2.5rem;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.8rem; color: var(--accent-cyan);">The Vision</h3>
+            <p style="color: var(--text-muted); line-height: 1.7;">To make 3D model creation completely frictionless. By replacing manual 3D CAD modeling with artificial intelligence, we empower every merchant on Earth to offer VisionOS and WebAR product experiences.</p>
+          </div>
+
+          <div class="glass-card" style="padding: 2.5rem;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.8rem; color: var(--primary);">The Technology</h3>
+            <p style="color: var(--text-muted); line-height: 1.7;">Combining cutting-edge Gaussian Splatting, Neural Radiance Fields (NeRF), and real-time WebGL canvas shaders to deliver sub-millimeter precision directly inside standard mobile web browsers.</p>
+          </div>
+
+          <div class="glass-card" style="padding: 2.5rem;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.8rem; color: var(--accent-pink);">Global Scale</h3>
+            <p style="color: var(--text-muted); line-height: 1.7;">Processing over 500,000 spatial 3D renders every single month for 500+ leading retail brands across 35 countries.</p>
+          </div>
+        </div>
+
+        <!-- Team Section -->
+        <div style="margin: 5rem 0;">
+          <div class="section-header">
+            <span class="section-tag">FOUNDING TEAM</span>
+            <h2 class="section-title">Meet the Minds Behind JoshStream Web</h2>
+          </div>
+
+          <div class="features-grid">
+            <div class="glass-card" style="padding: 2rem; text-align: center;">
+              <img src="C:/Users/USER/.gemini/antigravity/brain/427c207c-d7b8-4701-ba81-eb957b2e8028/team_ceo_1785147159650.jpg" alt="CEO" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-cyan); margin-bottom: 1rem;">
+              <h3 style="font-size: 1.2rem;">Dr. Katherine Vance</h3>
+              <p style="color: var(--accent-cyan); font-size: 0.85rem; font-weight: 600;">Co-Founder & CEO</p>
+              <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.6rem;">Former Computer Vision Lead at Stanford AI Lab. 10+ patents in neural surface reconstruction.</p>
+            </div>
+
+            <div class="glass-card" style="padding: 2rem; text-align: center;">
+              <img src="C:/Users/USER/.gemini/antigravity/brain/427c207c-d7b8-4701-ba81-eb957b2e8028/team_cto_1785147169258.jpg" alt="CTO" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); margin-bottom: 1rem;">
+              <h3 style="font-size: 1.2rem;">Marcus Thorne</h3>
+              <p style="color: var(--primary); font-size: 0.85rem; font-weight: 600;">Co-Founder & CTO</p>
+              <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.6rem;">Ex-Graphics Architect at Nvidia. Architected real-time WebGL WebXR renderers.</p>
+            </div>
+
+            <div class="glass-card" style="padding: 2rem; text-align: center;">
+              <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent-pink)); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; margin: 0 auto 1rem auto;">SL</div>
+              <h3 style="font-size: 1.2rem;">Sarah Lin</h3>
+              <p style="color: var(--accent-pink); font-size: 0.85rem; font-weight: 600;">Head of Product & UX</p>
+              <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.6rem;">Former Principal Product Designer at Stripe & Framer. Passionate about friction-free UI.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Milestones Timeline -->
+        <div style="margin-top: 6rem;">
+          <div class="section-header">
+            <span class="section-tag">COMPANY MILESTONES</span>
+            <h2 class="section-title">Our Growth Journey</h2>
+          </div>
+
+          <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="glass-card" style="padding: 1.8rem; display: flex; gap: 1.5rem; align-items: center;">
+              <div style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; color: var(--accent-cyan);">2024</div>
+              <div>
+                <h4 style="font-size: 1.1rem;">JoshStream Founded</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Initial NeRF AI research paper published. Raised $4.2M Seed round backed by top AI investors.</p>
+              </div>
+            </div>
+
+            <div class="glass-card" style="padding: 1.8rem; display: flex; gap: 1.5rem; align-items: center;">
+              <div style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; color: var(--primary);">2025</div>
+              <div>
+                <h4 style="font-size: 1.1rem;">10 Million 3D Renders Milestone</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Launched official Shopify & Webflow app extensions. Expanded to 300+ enterprise brands.</p>
+              </div>
+            </div>
+
+            <div class="glass-card" style="padding: 1.8rem; display: flex; gap: 1.5rem; align-items: center;">
+              <div style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; color: var(--accent-pink);">2026</div>
+              <div>
+                <h4 style="font-size: 1.1rem;">Series A & Spatial AI 2.0</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Raised $18M Series A to expand real-time Gaussian Splatting and VisionOS spatial commerce.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- 📚 6. BLOG PAGE                            -->
+    <!-- ========================================== -->
+    <section id="view-blog" class="view-container">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">SPATIAL COMMERCE INSIGHTS</span>
+          <h2 class="section-title">Latest Articles & Research</h2>
+          <p class="section-desc">Guides, case studies, and engineering deep dives into 3D e-commerce and WebAR.</p>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="blog-filters">
+          <button class="chip-btn blog-filter-btn active" data-category="all">All Articles</button>
+          <button class="chip-btn blog-filter-btn" data-category="Conversion ROI">Conversion ROI</button>
+          <button class="chip-btn blog-filter-btn" data-category="Spatial AR">Spatial AR</button>
+          <button class="chip-btn blog-filter-btn" data-category="E-Commerce Logistics">Logistics & Returns</button>
+          <button class="chip-btn blog-filter-btn" data-category="AI & NeRF Tech">AI Engineering</button>
+        </div>
+
+        <!-- Blog Cards Grid -->
+        <div id="blog-cards-grid" class="blog-grid">
+          <!-- Rendered dynamically via js/blog-modal.js -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Blog Article Modal Reader -->
+    <div id="blog-modal" class="modal-overlay">
+      <div class="modal-box">
+        <button id="blog-modal-close" class="modal-close">✕</button>
+        <div id="blog-modal-content"></div>
+      </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- 📞 7. CONTACT PAGE                         -->
+    <!-- ========================================== -->
+    <section id="view-contact" class="view-container">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">GET IN TOUCH</span>
+          <h2 class="section-title">Talk to a Spatial Commerce Expert</h2>
+          <p class="section-desc">Schedule a live demo or ask us anything about custom integrations.</p>
+        </div>
+
+        <div class="contact-grid">
+          <!-- Contact Form -->
+          <div class="glass-card" style="padding: 2.8rem;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Send Us a Message</h3>
+            
+            <form id="contact-form">
+              <div class="form-group">
+                <label class="form-label" for="contact-name">Full Name *</label>
+                <input type="text" id="contact-name" class="form-input" placeholder="e.g. Alex Morgan" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contact-email">Work Email *</label>
+                <input type="email" id="contact-email" class="form-input" placeholder="alex@company.com" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contact-store">E-Commerce Platform</label>
+                <select id="contact-store" class="form-select">
+                  <option value="shopify">Shopify / Shopify Plus</option>
+                  <option value="woocommerce">WooCommerce</option>
+                  <option value="magento">Magento / Adobe Commerce</option>
+                  <option value="custom">Custom Web Engine / API</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contact-msg">How can we help?</label>
+                <textarea id="contact-msg" class="form-textarea" rows="4" placeholder="Tell us about your catalog size and goals..."></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-cyan" style="width: 100%;">Submit Demo Request ➔</button>
+            </form>
+          </div>
+
+          <!-- FAQ Accordion & Office Info -->
+          <div>
+            <div class="glass-card" style="padding: 2rem; margin-bottom: 2rem;">
+              <h4 style="font-size: 1.2rem; margin-bottom: 1rem;">Direct Contact & Offices</h4>
+              <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.5rem;">📧 Sales: sales@joshstream.web</p>
+              <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.5rem;">🛠️ Support: support@joshstream.web</p>
+              <p style="color: var(--text-muted); font-size: 0.92rem;">📍 HQ: 450 Spatial Way, San Francisco, CA 94107</p>
+            </div>
+
+            <h4 style="font-size: 1.3rem; margin-top: 2rem;">Frequently Asked Questions</h4>
+
+            <div class="faq-accordion">
+              <div class="faq-item glass-card">
+                <div class="faq-question">
+                  <span>How long does it take to convert a video to 3D?</span>
+                  <span style="color: var(--accent-cyan);">+</span>
+                </div>
+                <div class="faq-answer">
+                  Our AI processes standard product videos in an average of 2.5 minutes. Once generated, your 3D GLTF and USDZ models are immediately ready to preview and embed.
+                </div>
+              </div>
+
+              <div class="faq-item glass-card">
+                <div class="faq-question">
+                  <span>Do shoppers need to download an AR app?</span>
+                  <span style="color: var(--accent-cyan);">+</span>
+                </div>
+                <div class="faq-answer">
+                  No! JoshStream Web uses native WebAR (iOS QuickLook & Android SceneViewer). Shoppers simply click a button or scan a QR code to view the product in their space inside Safari or Chrome.
+                </div>
+              </div>
+
+              <div class="faq-item glass-card">
+                <div class="faq-question">
+                  <span>What camera equipment do I need?</span>
+                  <span style="color: var(--accent-cyan);">+</span>
+                </div>
+                <div class="faq-answer">
+                  Any modern smartphone (iPhone 12+ or Android equivalent) works perfectly. Just slowly walk around the product in good lighting or use a $15 motorized turntable.
+                </div>
+              </div>
+
+              <div class="faq-item glass-card">
+                <div class="faq-question">
+                  <span>Does JoshStream Web slow down my store page load?</span>
+                  <span style="color: var(--accent-cyan);">+</span>
+                </div>
+                <div class="faq-answer">
+                  Not at all. Our WebGL viewer script is asynchronously loaded (under 25KB gzipped) and models are streamed via globally edge-cached CDNs.
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- 🔐 8. AUTH PAGES (LOGIN / SIGN UP)         -->
+    <!-- ========================================== -->
+    <section id="view-auth" class="view-container">
+      <div class="container">
+        
+        <div class="auth-box glass-card">
+          <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
+            <button id="auth-tab-login" class="tab-btn active" style="padding: 0.5rem 1.5rem;">Sign In</button>
+            <button id="auth-tab-signup" class="tab-btn" style="padding: 0.5rem 1.5rem;">Sign Up Free</button>
+          </div>
+
+          <h2 id="auth-form-title" style="font-size: 1.8rem; margin-bottom: 0.5rem;">Welcome Back</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Access your JoshStream Web Spatial Dashboard.</p>
+
+          <div class="oauth-group">
+            <button id="oauth-google-btn" class="oauth-btn" data-provider="Google">
+              <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+              <span>Continue with Google</span>
+            </button>
+            <button id="oauth-shopify-btn" class="oauth-btn" data-provider="Shopify">
+              <span>Shopify</span>
+            </button>
+          </div>
+
+          <div class="divider">or continue with email</div>
+
+          <form id="auth-form">
+            <div id="auth-name-group" class="form-group" style="display: none; text-align: left;">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-input" placeholder="Sarah Miller">
+            </div>
+
+            <div class="form-group" style="text-align: left;">
+              <label class="form-label">Email Address</label>
+              <input type="email" id="auth-email" class="form-input" placeholder="name@company.com" required>
+            </div>
+
+            <div class="form-group" style="text-align: left;">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-input" placeholder="••••••••••••" required>
+            </div>
+
+            <button type="submit" id="auth-submit-btn" class="btn btn-cyan" style="width: 100%; margin-top: 1rem;">
+              Sign In to Dashboard ➔
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="brand-logo" data-navigate="home" style="margin-bottom: 1rem;">
+            <div class="brand-icon">J</div>
+            <span>JoshStream<span style="color: var(--accent-cyan);">.Web</span></span>
+          </a>
+          <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 320px; margin-bottom: 1.5rem;">
+            The leading AI SaaS platform for converting product videos into interactive 3D models and spatial AR shopping experiences.
+          </p>
+          <div style="display: flex; gap: 1rem; color: var(--accent-cyan); font-weight: 700; font-size: 0.85rem;">
+            <span>SOC2 TYPE II</span> • <span>GDPR COMPLIANT</span> • <span>99.99% UPTIME</span>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Product</h5>
+          <ul class="footer-links">
+            <li><a data-navigate="features">AI 3D Engine</a></li>
+            <li><a data-navigate="features">WebAR QuickLook</a></li>
+            <li><a data-navigate="features">Shopify Extension</a></li>
+            <li><a data-navigate="features">Embed Builder</a></li>
+            <li><a data-navigate="pricing">Pricing Plans</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Use Cases</h5>
+          <ul class="footer-links">
+            <li><a data-navigate="use-cases">Fashion & Footwear</a></li>
+            <li><a data-navigate="use-cases">Furniture & Home</a></li>
+            <li><a data-navigate="use-cases">Electronics & Tech</a></li>
+            <li><a data-navigate="use-cases">Luxury & Jewelry</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Company</h5>
+          <ul class="footer-links">
+            <li><a data-navigate="about">About Us</a></li>
+            <li><a data-navigate="about">Leadership</a></li>
+            <li><a data-navigate="blog">Blog & Research</a></li>
+            <li><a data-navigate="contact">Contact Sales</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Legal & Security</h5>
+          <ul class="footer-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Security Overview</a></li>
+            <li><a href="#">Cookie Settings</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 JoshStream Web Technologies, Inc. All rights reserved.</p>
+        <p>Built with modern WebGL, NeRF AI, and WebXR Standards.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Scripts -->
+  <script src="js/three-viewer.js"></script>
+  <script src="js/auth-service.js"></script>
+  <script src="js/video-converter.js"></script>
+  <script src="js/pricing-calculator.js"></script>
+  <script src="js/use-cases.js"></script>
+  <script src="js/blog-modal.js"></script>
+  <script src="js/contact-form.js"></script>
+  <script src="js/auth-form.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
