@@ -1,27 +1,12 @@
-/* JoshStream Web - Production Backend Configuration (Firebase & Supabase)
- * 
- * Instructions:
- * 1. Go to https://console.firebase.google.com/
- * 2. Create a new Firebase Project (or select existing)
- * 3. Go to Project Settings > General > Your Apps > Web App (</>)
- * 4. Copy your firebaseConfig object and paste your credentials below!
- */
+/* JoshStream Web - Supabase Backend Configuration */
 
-window.FIREBASE_CONFIG = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "joshstream-web-demo.firebaseapp.com",
-  projectId: "joshstream-web-demo",
-  storageBucket: "joshstream-web-demo.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_FIREBASE_APP_ID"
-};
-
-/* Supabase Configuration Option (Alternative)
- * 1. Go to https://supabase.com/
- * 2. Create a new project -> Project Settings -> API
- * 3. Copy URL and anon key below.
- */
 window.SUPABASE_CONFIG = {
-  url: "https://YOUR_SUPABASE_PROJECT_REF.supabase.co",
-  anonKey: "YOUR_SUPABASE_ANON_KEY"
+  url: "https://jkxcehfcwktovanaeicg.supabase.co",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpreGNlaGZjd2t0b3ZhbmFlaWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDY1MDMsImV4cCI6MjEwMDcyMjUwM30.emirGQqaCWJ1EU-09NYtRHKhMU9vXIdL6NhZ1z7CbZ0"
 };
+
+// Initialize the global Supabase client immediately
+window.supabaseClient = supabase.createClient(
+  window.SUPABASE_CONFIG.url,
+  window.SUPABASE_CONFIG.anonKey
+);

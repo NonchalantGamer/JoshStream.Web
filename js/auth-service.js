@@ -1,176 +1,121 @@
-/* JoshStream Web - Production Auth & Backend Engine (Firebase / Supabase) */
+/* JoshStream Web - Supabase Auth Service */
 
 class GoogleAuthService {
   constructor() {
     this.user = null;
-    this.firebaseApp = null;
-    this.auth = null;
-    this.db = null;
-
+    this.supabase = null;
     this.init();
   }
 
-  init() {
-    // 1. Restore local session if active
-    const savedSession = localStorage.getItem('joshstream_user_session');
-    if (savedSession) {
-      try {
-        this.user = JSON.parse(savedSession);
-        this.updateNavUserUI();
-      } catch (e) {
-        localStorage.removeItem('joshstream_user_session');
-      }
+  async init() {
+    if (!window.supabaseClient) {
+      console.warn('Supabase client not initialized. Check firebase-config.js.');
+      return;
     }
 
-    // 2. Initialize Real Firebase SDK if configured
-    if (typeof firebase !== 'undefined' && window.FIREBASE_CONFIG) {
-      const config = window.FIREBASE_CONFIG;
-      const isConfigured = config.apiKey && !config.apiKey.includes('YOUR_');
+    this.supabase = window.supabaseClient;
 
-      if (isConfigured) {
+    // Listen for auth state changes (handles redirect-back after Google login)
+    this.supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        this._setUser(session.user);
+
+        // Sync profile to database
+        await this._syncProfile(session.user);
+
+        if (event === 'SIGNED_IN') {
+          if (window.showToast) window.showToast(`Welcome, ${this.user.name}! 🎉`);
+          // Navigate home after redirect sign-in
+          setTimeout(() => {
+            if (window.appRouter) window.appRouter.navigateTo('home');
+          }, 300);
+        }
+      } else if (event === 'SIGNED_OUT') {
+        this.user = null;
+        localStorage.removeItem('joshstream_user_session');
+        this.updateNavUserUI();
+      }
+    });
+
+    // Restore existing session on page load
+    const { data: { session } } = await this.supabase.auth.getSession();
+    if (session?.user) {
+      this._setUser(session.user);
+    } else {
+      // Fallback: restore from localStorage (e.g. before Supabase resolves)
+      const saved = localStorage.getItem('joshstream_user_session');
+      if (saved) {
         try {
-          if (!firebase.apps.length) {
-            this.firebaseApp = firebase.initializeApp(config);
-          } else {
-            this.firebaseApp = firebase.app();
-          }
-
-          this.auth = firebase.auth();
-          if (firebase.firestore) {
-            this.db = firebase.firestore();
-          }
-
-          // Real Firebase Auth state listener
-          this.auth.onAuthStateChanged(async (firebaseUser) => {
-            if (firebaseUser) {
-              this.user = {
-                uid: firebaseUser.uid,
-                name: firebaseUser.displayName || firebaseUser.email.split('@')[0],
-                email: firebaseUser.email,
-                photo: firebaseUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${firebaseUser.email}`,
-                provider: 'Firebase Google Auth'
-              };
-
-              localStorage.setItem('joshstream_user_session', JSON.stringify(this.user));
-              this.updateNavUserUI();
-
-              // Save/Sync user record in Firestore Database
-              if (this.db) {
-                try {
-                  await this.db.collection('users').doc(firebaseUser.uid).set({
-                    name: this.user.name,
-                    email: this.user.email,
-                    photo: this.user.photo,
-                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-                  }, { merge: true });
-                } catch (dbErr) {
-                  console.warn('Firestore sync note:', dbErr.message);
-                }
-              }
-            }
-          });
-        } catch (err) {
-          console.error('Firebase Auth Init Error:', err);
+          this.user = JSON.parse(saved);
+          this.updateNavUserUI();
+        } catch {
+          localStorage.removeItem('joshstream_user_session');
         }
       }
     }
+  }
+
+  _setUser(sbUser) {
+    this.user = {
+      uid: sbUser.id,
+      name: sbUser.user_metadata?.full_name || sbUser.email.split('@')[0],
+      email: sbUser.email,
+      photo: sbUser.user_metadata?.avatar_url ||
+             `https://api.dicebear.com/7.x/avataaars/svg?seed=${sbUser.email}`,
+      provider: 'Supabase Google OAuth'
+    };
+    localStorage.setItem('joshstream_user_session', JSON.stringify(this.user));
+    this.updateNavUserUI();
   }
 
   async signInWithGoogle() {
-    // A. Check if Live Firebase is configured
-    if (this.auth && window.FIREBASE_CONFIG?.apiKey && !window.FIREBASE_CONFIG.apiKey.includes('YOUR_')) {
-      try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.addScope('profile');
-        provider.addScope('email');
-
-        if (window.showToast) window.showToast('Connecting to Google OAuth...');
-        const result = await this.auth.signInWithPopup(provider);
-        const user = result.user;
-
-        this.user = {
-          uid: user.uid,
-          name: user.displayName || user.email.split('@')[0],
-          email: user.email,
-          photo: user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`,
-          provider: 'Real Firebase Google OAuth'
-        };
-
-        localStorage.setItem('joshstream_user_session', JSON.stringify(this.user));
-        this.updateNavUserUI();
-
-        if (window.showToast) {
-          window.showToast(`🔥 Real Firebase Auth Success! Welcome, ${this.user.name}.`);
-        }
-        return this.user;
-      } catch (error) {
-        console.error('Firebase Sign-In Error:', error);
-        if (window.showToast) {
-          window.showToast(`Firebase Auth Error: ${error.message}`, 'error');
-        }
-      }
+    if (!this.supabase) {
+      if (window.showToast) window.showToast('Supabase not configured.', 'error');
+      return;
     }
 
-    // B. Interactive Fallback when keys are not yet pasted
-    return this.promptForKeysOrFallback();
-  }
+    if (window.showToast) window.showToast('Redirecting to Google sign-in...');
 
-  promptForKeysOrFallback() {
-    return new Promise((resolve) => {
-      const choice = confirm(
-        "⚡ Connect Real Firebase Backend:\n\n" +
-        "You currently have placeholder API keys in js/firebase-config.js.\n\n" +
-        "• Click OK to simulate Google OAuth sign-in right now.\n" +
-        "• Click CANCEL to open instructions on setting up your real Firebase Console project."
-      );
-
-      if (choice) {
-        const email = prompt("Enter your Google account email to sign in:", "user@gmail.com");
-        if (!email) return resolve(null);
-
-        const name = email.split('@')[0].replace('.', ' ').replace(/^./, c => c.toUpperCase());
-        this.user = {
-          uid: 'g_real_' + Math.random().toString(36).substring(2, 9),
-          name: name,
-          email: email,
-          photo: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-          provider: 'Google OAuth'
-        };
-
-        localStorage.setItem('joshstream_user_session', JSON.stringify(this.user));
-        this.updateNavUserUI();
-
-        if (window.showToast) {
-          window.showToast(`Signed in as ${this.user.name} (${this.user.email})!`);
+    const { error } = await this.supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'https://josh-stream-web.vercel.app/',
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent'
         }
-
-        if (window.appRouter) window.appRouter.navigateTo('home');
-        resolve(this.user);
-      } else {
-        alert(
-          "📋 How to connect your real Firebase Backend:\n\n" +
-          "1. Open https://console.firebase.google.com/\n" +
-          "2. Create a project -> Enable Authentication -> Sign-in method -> Enable Google\n" +
-          "3. Go to Project Settings -> Web App (</>) -> Copy your firebaseConfig\n" +
-          "4. Open file js/firebase-config.js and paste your keys!"
-        );
-        resolve(null);
       }
     });
+
+    if (error) {
+      console.error('Google Sign-In Error:', error);
+      if (window.showToast) window.showToast(`Sign-in error: ${error.message}`, 'error');
+    }
   }
 
-  signOut() {
-    if (this.auth) {
-      this.auth.signOut().catch(() => {});
+  async _syncProfile(sbUser) {
+    if (!this.supabase) return;
+    try {
+      await this.supabase.from('profiles').upsert({
+        id: sbUser.id,
+        name: sbUser.user_metadata?.full_name || sbUser.email.split('@')[0],
+        email: sbUser.email,
+        avatar_url: sbUser.user_metadata?.avatar_url || null,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
+    } catch (err) {
+      console.warn('Profile sync note:', err.message);
     }
+  }
 
+  async signOut() {
+    if (this.supabase) {
+      await this.supabase.auth.signOut();
+    }
     this.user = null;
     localStorage.removeItem('joshstream_user_session');
     this.updateNavUserUI();
-
-    if (window.showToast) {
-      window.showToast('Signed out successfully.');
-    }
+    if (window.showToast) window.showToast('Signed out successfully.');
   }
 
   updateNavUserUI() {
