@@ -35,24 +35,33 @@ class GoogleAuthService {
         this._setUser(session.user);
         this._syncProfile(session.user);
 
-        // Strip tokens from URL so the SPA router and bookmarks stay clean
+        // Strip OAuth tokens from URL
         const dirty = window.location.hash || window.location.search;
         if (dirty && (dirty.includes('access_token') || dirty.includes('code=') || dirty.includes('error='))) {
           window.history.replaceState(null, document.title, window.location.pathname);
         }
 
-        if (!this._sessionHandled) {
+        // Only trigger welcome toast + navigation once per sign-in/sign-up action
+        if (!this._sessionHandled && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
           this._sessionHandled = true;
-          const isNewSignIn = event === 'SIGNED_IN' || event === 'INITIAL_SESSION';
-          if (isNewSignIn) {
-            if (window.showToast) window.showToast(`Welcome, ${this.user.name}! 🎉`);
-            // Navigate to profile page so user can see they are signed in
-            setTimeout(() => {
-              if (window.appRouter) window.appRouter.navigateTo('profile');
-            }, 400);
-          }
+          const isNewAccount = session.user.created_at &&
+            (Date.now() - new Date(session.user.created_at).getTime()) < 30000; // created < 30s ago
+          const welcomeMsg = isNewAccount
+            ? `Account created! Welcome to JoshStream, ${this.user.name}! 🚀`
+            : `Welcome back, ${this.user.name}! 🎉`;
+          if (window.showToast) window.showToast(welcomeMsg);
+          setTimeout(() => {
+            if (window.appRouter) window.appRouter.navigateTo('profile');
+          }, 400);
         }
+
+        // INITIAL_SESSION = page reload with existing session; just refresh UI silently
+        if (event === 'INITIAL_SESSION') {
+          this._sessionHandled = true;
+        }
+
       } else if (event === 'SIGNED_OUT') {
+        // Only wipe on explicit sign-out, not on INITIAL_SESSION with no user
         this._sessionHandled = false;
         this.user = null;
         localStorage.removeItem('joshstream_user_session');
@@ -60,6 +69,7 @@ class GoogleAuthService {
         this._populateProfilePage();
       }
     });
+
 
     // ── Step 3: Eagerly resolve any existing or redirected session ────────────
     try {

@@ -124,14 +124,14 @@ class AuthHandler {
       return;
     }
 
-    // Supabase may require email confirmation depending on project settings
-    if (data.user && !data.session) {
-      if (window.showToast) window.showToast('Account created! Check your email to confirm your address, then sign in. 📧');
-    } else {
-      // Auto-confirmed (email confirmation disabled in Supabase dashboard) — session is live
-      console.log('[Auth] signUp + auto-confirmed:', data.user?.email);
-      // onAuthStateChange fires automatically
+    // Email confirmation is disabled in Supabase → session is live immediately.
+    // onAuthStateChange in auth-service.js fires SIGNED_IN and handles all UI
+    // updates + navigation to profile automatically. Nothing extra needed here.
+    if (!data.session) {
+      // Fallback: project still requires email confirmation
+      if (window.showToast) window.showToast('Account created! Please check your email to confirm, then sign in. 📧');
     }
+    // If data.session exists: onAuthStateChange fires → user is signed in, navigated to profile.
   }
 
   // ── Toggle login / signup mode ────────────────────────────────────────────
