@@ -33,10 +33,20 @@ class AppRouter {
       }
     });
 
-    // Handle Mobile Menu Toggle
+    // Handle Mobile Menu Toggle & Auto-Close on Navigation
     if (this.mobileMenuBtn && this.mobileNav) {
-      this.mobileMenuBtn.addEventListener('click', () => {
+      this.mobileMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         this.mobileNav.classList.toggle('active');
+        this.mobileMenuBtn.classList.toggle('active');
+      });
+
+      // Close mobile menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!this.mobileNav.contains(e.target) && !this.mobileMenuBtn.contains(e.target)) {
+          this.mobileNav.classList.remove('active');
+          this.mobileMenuBtn.classList.remove('active');
+        }
       });
     }
 
@@ -72,6 +82,14 @@ class AppRouter {
       const targetAttr = link.getAttribute('data-navigate');
       link.classList.toggle('active', targetAttr === viewId);
     });
+
+    // Close mobile nav drawer on navigate
+    if (this.mobileNav) {
+      this.mobileNav.classList.remove('active');
+    }
+    if (this.mobileMenuBtn) {
+      this.mobileMenuBtn.classList.remove('active');
+    }
 
     // Trigger re-layouts if needed
     if (viewId === 'home' && window.heroViewer) {

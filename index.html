@@ -45,7 +45,33 @@
         <button class="btn btn-secondary" data-navigate="auth">Sign In</button>
         <button class="btn btn-cyan" data-navigate="auth">Start Free Trial ➔</button>
       </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle Navigation Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
     </nav>
+
+    <!-- Mobile Slide-Down Drawer -->
+    <div id="mobile-nav" class="mobile-nav">
+      <ul class="mobile-nav-links">
+        <li><a class="nav-link active" data-navigate="home">Home</a></li>
+        <li><a class="nav-link" data-navigate="features">Features</a></li>
+        <li><a class="nav-link" data-navigate="pricing">Pricing</a></li>
+        <li><a class="nav-link" data-navigate="use-cases">Use Cases</a></li>
+        <li><a class="nav-link" data-navigate="about">About</a></li>
+        <li><a class="nav-link" data-navigate="blog">Blog</a></li>
+        <li><a class="nav-link" data-navigate="contact">Contact</a></li>
+      </ul>
+      <div class="mobile-nav-actions">
+        <button class="btn btn-secondary" style="width: 100%;" data-navigate="auth">Sign In</button>
+        <button class="btn btn-cyan" style="width: 100%;" data-navigate="auth">Start Free Trial ➔</button>
+      </div>
+    </div>
   </header>
 
   <!-- Main Views Container -->

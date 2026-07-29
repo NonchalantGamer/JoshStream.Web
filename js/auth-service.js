@@ -15,22 +15,6 @@ class GoogleAuthService {
 
     this.supabase = window.supabaseClient;
 
-    // Handle PKCE code exchange on redirect-back from Google
-    // Supabase v2 returns ?code= in the URL after OAuth redirect
-    const urlParams = new URLSearchParams(window.location.search);
-    const hashParams = new URLSearchParams(window.location.hash.replace('#', '?').slice(1));
-
-    if (urlParams.get('code')) {
-      console.log('[JoshStream] Exchanging auth code for session...');
-      try {
-        const { data, error } = await this.supabase.auth.exchangeCodeForSession(window.location.href);
-        if (error) console.error('[JoshStream] Code exchange error:', error.message);
-        // Clean up the URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-      } catch (e) {
-        console.warn('[JoshStream] Code exchange exception:', e);
-      }
-    }
 
     // Listen for auth state changes
     this.supabase.auth.onAuthStateChange(async (event, session) => {
@@ -139,36 +123,38 @@ class GoogleAuthService {
   }
 
   updateNavUserUI() {
-    const navActions = document.querySelector('.nav-actions');
-    if (!navActions) {
-      // DOM might not be ready yet — retry once
+    const navActionsList = document.querySelectorAll('.nav-actions, .mobile-nav-actions');
+    if (!navActionsList.length) {
       setTimeout(() => this.updateNavUserUI(), 300);
       return;
     }
 
-    if (this.user) {
-      navActions.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 0.8rem; background: rgba(255,255,255,0.05); padding: 0.3rem 0.8rem 0.3rem 0.4rem; border-radius: var(--radius-full); border: 1px solid var(--border-purple-glow);">
-          <img src="${this.user.photo}" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary);">
-          <span style="font-weight: 600; font-size: 0.9rem; color: #FFF;">${this.user.name}</span>
-          <button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;" onclick="window.googleAuth.signOut()">Sign Out</button>
-        </div>
-      `;
-    } else {
-      navActions.innerHTML = `
-        <button class="btn btn-secondary" data-navigate="auth">Sign In</button>
-        <button class="btn btn-cyan" data-navigate="auth">Start Free Trial ➔</button>
-      `;
-      document.querySelectorAll('[data-navigate]').forEach(link => {
-        link.addEventListener('click', (e) => {
-          const targetView = link.getAttribute('data-navigate');
-          if (targetView && window.appRouter) {
-            e.preventDefault();
-            window.appRouter.navigateTo(targetView);
-          }
-        });
+    navActionsList.forEach(container => {
+      if (this.user) {
+        container.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: center; gap: 0.8rem; background: rgba(255,255,255,0.05); padding: 0.4rem 1rem; border-radius: var(--radius-full); border: 1px solid var(--border-purple-glow); width: 100%;">
+            <img src="${this.user.photo}" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary);">
+            <span style="font-weight: 600; font-size: 0.9rem; color: #FFF;">${this.user.name}</span>
+            <button class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;" onclick="window.googleAuth.signOut()">Sign Out</button>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <button class="btn btn-secondary" style="${container.classList.contains('mobile-nav-actions') ? 'width:100%;' : ''}" data-navigate="auth">Sign In</button>
+          <button class="btn btn-cyan" style="${container.classList.contains('mobile-nav-actions') ? 'width:100%;' : ''}" data-navigate="auth">Start Free Trial ➔</button>
+        `;
+      }
+    });
+
+    document.querySelectorAll('[data-navigate]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const targetView = link.getAttribute('data-navigate');
+        if (targetView && window.appRouter) {
+          e.preventDefault();
+          window.appRouter.navigateTo(targetView);
+        }
       });
-    }
+    });
   }
 }
 
