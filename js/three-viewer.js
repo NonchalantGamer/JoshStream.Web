@@ -11,7 +11,7 @@ class Product3DViewer {
     this.currentMesh = null;
     this.isRotating = true;
     this.isWireframe = false;
-    this.currentColor = '#8B5CF6';
+    this.currentColor = '#FF2A5F';
     this.currentProduct = 'sneaker';
 
     this.init();
@@ -45,16 +45,16 @@ class Product3DViewer {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     this.scene.add(ambientLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0x00f0ff, 1.3);
+    const dirLight1 = new THREE.DirectionalLight(0xffb800, 1.3);
     dirLight1.position.set(5, 5, 5);
     this.scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0x8b5cf6, 1.1);
+    const dirLight2 = new THREE.DirectionalLight(0xff2a5f, 1.1);
     dirLight2.position.set(-5, -2, -5);
     this.scene.add(dirLight2);
 
     // Grid Floor
-    this.gridHelper = new THREE.GridHelper(10, 20, 0x00f0ff, 0x241e52);
+    this.gridHelper = new THREE.GridHelper(10, 20, 0xffb800, 0x421020);
     this.gridHelper.position.y = -1.5;
     this.scene.add(this.gridHelper);
 
@@ -260,7 +260,7 @@ class Product3DViewer {
     let angle = 0;
     const draw = () => {
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      ctx.fillStyle = '#17113A';
+      ctx.fillStyle = '#3A0C1A';
       ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
       ctx.save();
@@ -268,11 +268,11 @@ class Product3DViewer {
       ctx.rotate(angle);
       
       // Draw 3D wireframe box placeholder
-      ctx.strokeStyle = '#00F0FF';
+      ctx.strokeStyle = '#FFB800';
       ctx.lineWidth = 2;
       ctx.strokeRect(-80, -50, 160, 100);
       
-      ctx.strokeStyle = '#8B5CF6';
+      ctx.strokeStyle = '#FF2A5F';
       ctx.strokeRect(-50, -80, 100, 160);
 
       ctx.restore();
