@@ -33,7 +33,8 @@ class Product3DViewer {
 
     // Camera
     this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    this.camera.position.set(0, 2, 5);
+    this.camera.position.set(0, 0, 4.8);
+    this.camera.lookAt(0, 0, 0);
 
     // Renderer
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
@@ -41,21 +42,21 @@ class Product3DViewer {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     this.scene.add(ambientLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0x00f0ff, 1.2);
+    const dirLight1 = new THREE.DirectionalLight(0x00f0ff, 1.3);
     dirLight1.position.set(5, 5, 5);
     this.scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0x8b5cf6, 1.0);
+    const dirLight2 = new THREE.DirectionalLight(0x8b5cf6, 1.1);
     dirLight2.position.set(-5, -2, -5);
     this.scene.add(dirLight2);
 
     // Grid Floor
-    const gridHelper = new THREE.GridHelper(10, 20, 0x00f0ff, 0x241e52);
-    gridHelper.position.y = -1.2;
-    this.scene.add(gridHelper);
+    this.gridHelper = new THREE.GridHelper(10, 20, 0x00f0ff, 0x241e52);
+    this.gridHelper.position.y = -1.5;
+    this.scene.add(this.gridHelper);
 
     // Load initial 3D Mesh
     this.loadProductModel(this.currentProduct);
@@ -63,7 +64,7 @@ class Product3DViewer {
     // Handle Window Resize
     window.addEventListener('resize', () => this.onResize());
 
-    // Mouse Drag Controls
+    // Mouse & Touch Drag Controls
     this.initMouseDrag();
 
     // Render Loop
@@ -89,31 +90,40 @@ class Product3DViewer {
       // Procedural 3D Sneaker Mesh geometry representation
       const soleGeo = new THREE.BoxGeometry(2.4, 0.4, 1.0);
       const soleMesh = new THREE.Mesh(soleGeo, material);
-      soleMesh.position.y = -0.8;
+      soleMesh.position.y = -0.4;
       group.add(soleMesh);
 
-      const upperGeo = new THREE.CylinderGeometry(0.5, 0.9, 1.2, 16);
+      const upperGeo = new THREE.CylinderGeometry(0.5, 0.9, 1.1, 16);
       const upperMesh = new THREE.Mesh(upperGeo, material);
       upperMesh.rotation.z = Math.PI / 6;
-      upperMesh.position.set(-0.2, -0.1, 0);
+      upperMesh.position.set(-0.2, 0.3, 0);
       group.add(upperMesh);
 
       const toeGeo = new THREE.SphereGeometry(0.5, 16, 16);
       const toeMesh = new THREE.Mesh(toeGeo, material);
-      toeMesh.position.set(0.7, -0.6, 0);
+      toeMesh.position.set(0.7, -0.2, 0);
       group.add(toeMesh);
     } else if (productType === 'chair') {
       // Procedural Lounge Chair Geometry
       const seatGeo = new THREE.BoxGeometry(1.6, 0.2, 1.6);
       const seatMesh = new THREE.Mesh(seatGeo, material);
-      seatMesh.position.y = -0.3;
+      seatMesh.position.y = 0;
       group.add(seatMesh);
 
       const backGeo = new THREE.BoxGeometry(1.6, 1.4, 0.2);
       const backMesh = new THREE.Mesh(backGeo, material);
-      backMesh.position.set(0, 0.4, -0.7);
+      backMesh.position.set(0, 0.7, -0.7);
       backMesh.rotation.x = -0.1;
       group.add(backMesh);
+
+      // Chair Legs
+      const legGeo = new THREE.CylinderGeometry(0.06, 0.04, 0.8, 8);
+      const legPositions = [[-0.7, -0.5, -0.7], [0.7, -0.5, -0.7], [-0.7, -0.5, 0.7], [0.7, -0.5, 0.7]];
+      legPositions.forEach(pos => {
+        const leg = new THREE.Mesh(legGeo, material);
+        leg.position.set(...pos);
+        group.add(leg);
+      });
     } else if (productType === 'watch') {
       // Luxury Smartwatch Geometry
       const bodyGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.2, 32);
@@ -122,7 +132,7 @@ class Product3DViewer {
 
       const strapGeo = new THREE.BoxGeometry(0.6, 0.05, 3.2);
       const strapMesh = new THREE.Mesh(strapGeo, material);
-      strapMesh.position.y = -0.1;
+      strapMesh.position.y = -0.05;
       group.add(strapMesh);
     } else if (productType === 'headset') {
       // Spatial Vision Headset
@@ -130,9 +140,29 @@ class Product3DViewer {
       visorGeo.scale(1.4, 0.7, 0.8);
       const visorMesh = new THREE.Mesh(visorGeo, material);
       group.add(visorMesh);
+
+      const bandGeo = new THREE.TorusGeometry(1.2, 0.1, 16, 32, Math.PI);
+      const bandMesh = new THREE.Mesh(bandGeo, material);
+      bandMesh.rotation.x = Math.PI / 2;
+      group.add(bandMesh);
     }
 
-    this.currentMesh = group;
+    // Centering: Calculate Bounding Box and offset group so origin is dead center
+    const box = new THREE.Box3().setFromObject(group);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    group.position.sub(center);
+
+    // Adjust Grid Floor to be right under the centered model
+    if (this.gridHelper) {
+      this.gridHelper.position.y = -(size.y / 2) - 0.2;
+    }
+
+    // Outer wrapper for smooth rotation around origin (0, 0, 0)
+    const wrapper = new THREE.Group();
+    wrapper.add(group);
+
+    this.currentMesh = wrapper;
     this.scene.add(this.currentMesh);
   }
 
@@ -162,34 +192,55 @@ class Product3DViewer {
 
   initMouseDrag() {
     let isDragging = false;
-    let previousMousePosition = { x: 0, y: 0 };
+    let previousPos = { x: 0, y: 0 };
 
-    this.canvas.addEventListener('mousedown', (e) => {
+    const startDrag = (x, y) => {
       isDragging = true;
-      previousMousePosition = { x: e.clientX, y: e.clientY };
-    });
+      previousPos = { x, y };
+    };
 
-    this.canvas.addEventListener('mousemove', (e) => {
+    const moveDrag = (x, y) => {
       if (!isDragging || !this.currentMesh) return;
-      const deltaX = e.clientX - previousMousePosition.x;
-      const deltaY = e.clientY - previousMousePosition.y;
+      const deltaX = x - previousPos.x;
+      const deltaY = y - previousPos.y;
 
       this.currentMesh.rotation.y += deltaX * 0.01;
       this.currentMesh.rotation.x += deltaY * 0.01;
 
-      previousMousePosition = { x: e.clientX, y: e.clientY };
-    });
+      previousPos = { x, y };
+    };
 
-    window.addEventListener('mouseup', () => { isDragging = false; });
+    const stopDrag = () => { isDragging = false; };
+
+    // Mouse Events
+    this.canvas.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
+    this.canvas.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
+    window.addEventListener('mouseup', stopDrag);
+
+    // Touch Events for Mobile Centered Control
+    this.canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        startDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    this.canvas.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1) {
+        moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', stopDrag);
   }
 
   onResize() {
-    if (!this.renderer || !this.camera) return;
+    if (!this.renderer || !this.camera || !this.canvas?.parentElement) return;
     const width = this.canvas.parentElement.clientWidth;
     const height = this.canvas.parentElement.clientHeight;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
+    this.camera.lookAt(0, 0, 0);
   }
 
   animate() {
