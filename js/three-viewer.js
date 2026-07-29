@@ -41,22 +41,42 @@ class Product3DViewer {
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    // Studio Lighting Setup for Photo-Realism
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
     this.scene.add(ambientLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0xffb800, 1.3);
-    dirLight1.position.set(5, 5, 5);
-    this.scene.add(dirLight1);
+    // Key Studio Light
+    const keyLight = new THREE.DirectionalLight(0xfff8f0, 1.4);
+    keyLight.position.set(5, 8, 6);
+    this.scene.add(keyLight);
 
-    const dirLight2 = new THREE.DirectionalLight(0xff2a5f, 1.1);
-    dirLight2.position.set(-5, -2, -5);
-    this.scene.add(dirLight2);
+    // Fill Crimson Rim Light
+    const fillLight = new THREE.DirectionalLight(0xff2a5f, 0.85);
+    fillLight.position.set(-6, 2, -4);
+    this.scene.add(fillLight);
 
-    // Grid Floor
-    this.gridHelper = new THREE.GridHelper(10, 20, 0xffb800, 0x421020);
+    // Gold Top/Back Rim Light
+    const rimLight = new THREE.DirectionalLight(0xffb800, 1.0);
+    rimLight.position.set(2, 6, -5);
+    this.scene.add(rimLight);
+
+    // Grid Floor & Soft Shadow Disc
+    this.gridHelper = new THREE.GridHelper(10, 24, 0xffb800, 0x3d0d1b);
     this.gridHelper.position.y = -1.5;
     this.scene.add(this.gridHelper);
+
+    // Soft Studio Contact Shadow Floor Disc
+    const shadowGeo = new THREE.PlaneGeometry(3.5, 3.5);
+    const shadowMat = new THREE.MeshBasicMaterial({
+      color: 0x000000,
+      transparent: true,
+      opacity: 0.45,
+      depthWrite: false
+    });
+    this.contactShadow = new THREE.Mesh(shadowGeo, shadowMat);
+    this.contactShadow.rotation.x = -Math.PI / 2;
+    this.contactShadow.position.y = -1.49;
+    this.scene.add(this.contactShadow);
 
     // Load initial 3D Mesh
     this.loadProductModel(this.currentProduct);
@@ -79,71 +99,220 @@ class Product3DViewer {
     this.currentProduct = productType;
     const group = new THREE.Group();
 
-    const material = new THREE.MeshStandardMaterial({
+    // Realistic PBR Materials Setup
+    const primaryMat = new THREE.MeshPhysicalMaterial({
       color: new THREE.Color(this.currentColor),
+      roughness: 0.35,
+      metalness: 0.25,
+      clearcoat: 0.3,
+      clearcoatRoughness: 0.2,
+      wireframe: this.isWireframe
+    });
+
+    const rubberMat = new THREE.MeshStandardMaterial({
+      color: 0x18181c,
+      roughness: 0.85,
+      metalness: 0.1,
+      wireframe: this.isWireframe
+    });
+
+    const chromeMat = new THREE.MeshStandardMaterial({
+      color: 0xe2e8f0,
+      roughness: 0.15,
+      metalness: 0.95,
+      wireframe: this.isWireframe
+    });
+
+    const goldMat = new THREE.MeshStandardMaterial({
+      color: 0xffb800,
       roughness: 0.2,
-      metalness: 0.8,
+      metalness: 0.9,
+      wireframe: this.isWireframe
+    });
+
+    const glassMat = new THREE.MeshPhysicalMaterial({
+      color: 0x111122,
+      metalness: 0.9,
+      roughness: 0.05,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.05,
+      wireframe: this.isWireframe
+    });
+
+    const fabricMat = new THREE.MeshStandardMaterial({
+      color: 0x2a2830,
+      roughness: 0.9,
+      metalness: 0.05,
       wireframe: this.isWireframe
     });
 
     if (productType === 'sneaker') {
-      // Procedural 3D Sneaker Mesh geometry representation
-      const soleGeo = new THREE.BoxGeometry(2.4, 0.4, 1.0);
-      const soleMesh = new THREE.Mesh(soleGeo, material);
-      soleMesh.position.y = -0.4;
+      // --- Realistic Air-Cushioned Performance Sneaker ---
+      // Outsole
+      const soleGeo = new THREE.BoxGeometry(2.6, 0.35, 1.1, 8, 2, 4);
+      const soleMesh = new THREE.Mesh(soleGeo, rubberMat);
+      soleMesh.position.y = -0.6;
       group.add(soleMesh);
 
-      const upperGeo = new THREE.CylinderGeometry(0.5, 0.9, 1.1, 16);
-      const upperMesh = new THREE.Mesh(upperGeo, material);
-      upperMesh.rotation.z = Math.PI / 6;
-      upperMesh.position.set(-0.2, 0.3, 0);
+      // Midsole Air Unit Cushioning Window
+      const airGeo = new THREE.BoxGeometry(1.6, 0.22, 0.98);
+      const airMesh = new THREE.Mesh(airGeo, glassMat);
+      airMesh.position.set(-0.2, -0.38, 0);
+      group.add(airMesh);
+
+      // Main Upper Body
+      const upperGeo = new THREE.CylinderGeometry(0.55, 0.95, 1.25, 32);
+      const upperMesh = new THREE.Mesh(upperGeo, primaryMat);
+      upperMesh.rotation.z = Math.PI / 6.5;
+      upperMesh.position.set(-0.25, 0.28, 0);
       group.add(upperMesh);
 
-      const toeGeo = new THREE.SphereGeometry(0.5, 16, 16);
-      const toeMesh = new THREE.Mesh(toeGeo, material);
-      toeMesh.position.set(0.7, -0.2, 0);
+      // Sculpted Toe Cap
+      const toeGeo = new THREE.SphereGeometry(0.56, 32, 16);
+      toeGeo.scale(1.2, 0.7, 0.95);
+      const toeMesh = new THREE.Mesh(toeGeo, primaryMat);
+      toeMesh.position.set(0.75, -0.3, 0);
       group.add(toeMesh);
+
+      // Ankle Collar Cushion
+      const collarGeo = new THREE.TorusGeometry(0.48, 0.12, 16, 32);
+      const collarMesh = new THREE.Mesh(collarGeo, fabricMat);
+      collarMesh.rotation.x = Math.PI / 2;
+      collarMesh.rotation.y = Math.PI / 6;
+      collarMesh.position.set(-0.7, 0.75, 0);
+      group.add(collarMesh);
+
+      // Gold Metallic Side Chevron / Branding Swoosh
+      const stripeGeo = new THREE.BoxGeometry(1.2, 0.12, 1.05);
+      const stripeMesh = new THREE.Mesh(stripeGeo, goldMat);
+      stripeMesh.rotation.z = -Math.PI / 10;
+      stripeMesh.position.set(0.1, 0.1, 0);
+      group.add(stripeMesh);
+
+      // Criss-Cross Lacing Loops
+      for (let i = 0; i < 4; i++) {
+        const laceGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.85, 12);
+        const laceMesh = new THREE.Mesh(laceGeo, chromeMat);
+        laceMesh.rotation.x = Math.PI / 2;
+        laceMesh.rotation.z = -Math.PI / 12;
+        laceMesh.position.set(-0.1 + i * 0.22, 0.25 + i * 0.12, 0);
+        group.add(laceMesh);
+      }
     } else if (productType === 'chair') {
-      // Procedural Lounge Chair Geometry
-      const seatGeo = new THREE.BoxGeometry(1.6, 0.2, 1.6);
-      const seatMesh = new THREE.Mesh(seatGeo, material);
-      seatMesh.position.y = 0;
+      // --- Realistic Mid-Century Lounge Chair & Ottoman Frame ---
+      // Cushion Seat Body
+      const seatGeo = new THREE.BoxGeometry(1.8, 0.28, 1.7, 4, 2, 4);
+      const seatMesh = new THREE.Mesh(seatGeo, primaryMat);
+      seatMesh.position.set(0, -0.1, 0);
       group.add(seatMesh);
 
-      const backGeo = new THREE.BoxGeometry(1.6, 1.4, 0.2);
-      const backMesh = new THREE.Mesh(backGeo, material);
-      backMesh.position.set(0, 0.7, -0.7);
-      backMesh.rotation.x = -0.1;
+      // Ergonomic Backrest Cushion
+      const backGeo = new THREE.BoxGeometry(1.7, 1.5, 0.25, 4, 4, 2);
+      const backMesh = new THREE.Mesh(backGeo, primaryMat);
+      backMesh.position.set(0, 0.75, -0.75);
+      backMesh.rotation.x = -0.15;
       group.add(backMesh);
 
-      // Chair Legs
-      const legGeo = new THREE.CylinderGeometry(0.06, 0.04, 0.8, 8);
-      const legPositions = [[-0.7, -0.5, -0.7], [0.7, -0.5, -0.7], [-0.7, -0.5, 0.7], [0.7, -0.5, 0.7]];
-      legPositions.forEach(pos => {
-        const leg = new THREE.Mesh(legGeo, material);
-        leg.position.set(...pos);
+      // Side Armrest Pads
+      const armLeftGeo = new THREE.BoxGeometry(0.22, 0.35, 1.4);
+      const armLeft = new THREE.Mesh(armLeftGeo, primaryMat);
+      armLeft.position.set(-0.95, 0.25, 0);
+      group.add(armLeft);
+
+      const armRight = armLeft.clone();
+      armRight.position.set(0.95, 0.25, 0);
+      group.add(armRight);
+
+      // Polished Chrome Metallic Angled Legs
+      const legGeo = new THREE.CylinderGeometry(0.05, 0.03, 0.85, 16);
+      const legPositions = [
+        [-0.8, -0.6, -0.75, 0.2, -0.2],
+        [0.8, -0.6, -0.75, 0.2, 0.2],
+        [-0.8, -0.6, 0.75, -0.2, -0.2],
+        [0.8, -0.6, 0.75, -0.2, 0.2]
+      ];
+      legPositions.forEach(([x, y, z, rx, rz]) => {
+        const leg = new THREE.Mesh(legGeo, chromeMat);
+        leg.position.set(x, y, z);
+        leg.rotation.x = rx;
+        leg.rotation.z = rz;
         group.add(leg);
+
+        // Rubber Floor Caps
+        const capGeo = new THREE.CylinderGeometry(0.055, 0.055, 0.08, 16);
+        const cap = new THREE.Mesh(capGeo, rubberMat);
+        cap.position.set(x, y - 0.4, z);
+        group.add(cap);
       });
     } else if (productType === 'watch') {
-      // Luxury Smartwatch Geometry
-      const bodyGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.2, 32);
-      const bodyMesh = new THREE.Mesh(bodyGeo, material);
-      group.add(bodyMesh);
+      // --- Realistic Premium Smartwatch ---
+      // Anodized Aluminum Watch Body Case
+      const caseGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.25, 64);
+      const caseMesh = new THREE.Mesh(caseGeo, chromeMat);
+      group.add(caseMesh);
 
-      const strapGeo = new THREE.BoxGeometry(0.6, 0.05, 3.2);
-      const strapMesh = new THREE.Mesh(strapGeo, material);
-      strapMesh.position.y = -0.05;
+      // Bezel Accent Ring
+      const bezelGeo = new THREE.TorusGeometry(0.96, 0.05, 16, 64);
+      const bezelMesh = new THREE.Mesh(bezelGeo, goldMat);
+      bezelMesh.rotation.x = Math.PI / 2;
+      group.add(bezelMesh);
+
+      // Curved Sapphire Glass Screen Face
+      const screenGeo = new THREE.CylinderGeometry(0.88, 0.88, 0.06, 64);
+      const screenMesh = new THREE.Mesh(screenGeo, glassMat);
+      screenMesh.position.y = 0.11;
+      group.add(screenMesh);
+
+      // Side Crown Control Dial Button
+      const crownGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.2, 24);
+      const crownMesh = new THREE.Mesh(crownGeo, goldMat);
+      crownMesh.rotation.z = Math.PI / 2;
+      crownMesh.position.set(1.05, 0, 0);
+      group.add(crownMesh);
+
+      // Flexible Textured Rubber / Leather Watch Strap
+      const strapGeo = new THREE.BoxGeometry(0.72, 0.08, 3.4);
+      const strapMesh = new THREE.Mesh(strapGeo, primaryMat);
+      strapMesh.position.y = -0.06;
       group.add(strapMesh);
+
+      // Metallic Strap Clasp / Buckle
+      const buckleGeo = new THREE.BoxGeometry(0.78, 0.12, 0.18);
+      const buckleMesh = new THREE.Mesh(buckleGeo, chromeMat);
+      buckleMesh.position.set(0, -0.06, 1.6);
+      group.add(buckleMesh);
     } else if (productType === 'headset') {
-      // Spatial Vision Headset
-      const visorGeo = new THREE.SphereGeometry(0.9, 32, 16);
-      visorGeo.scale(1.4, 0.7, 0.8);
-      const visorMesh = new THREE.Mesh(visorGeo, material);
+      // --- Realistic Spatial Vision AR/VR Headset ---
+      // Curved Continuous Mirror Glass Front Visor
+      const visorGeo = new THREE.SphereGeometry(1.0, 64, 32);
+      visorGeo.scale(1.45, 0.72, 0.85);
+      const visorMesh = new THREE.Mesh(visorGeo, glassMat);
       group.add(visorMesh);
 
-      const bandGeo = new THREE.TorusGeometry(1.2, 0.1, 16, 32, Math.PI);
-      const bandMesh = new THREE.Mesh(bandGeo, material);
+      // Fabric Cushion Face Seal Gasket
+      const gasketGeo = new THREE.TorusGeometry(0.95, 0.15, 16, 64);
+      const gasketMesh = new THREE.Mesh(gasketGeo, fabricMat);
+      gasketMesh.position.set(0, 0, -0.45);
+      group.add(gasketMesh);
+
+      // Precision Aluminum Frame Accent Ring
+      const frameGeo = new THREE.TorusGeometry(1.22, 0.05, 16, 64);
+      const frameMesh = new THREE.Mesh(frameGeo, chromeMat);
+      frameMesh.position.set(0, 0, -0.15);
+      group.add(frameMesh);
+
+      // Gold Metallic Dial Adjuster Knob
+      const dialGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.12, 32);
+      const dialMesh = new THREE.Mesh(dialGeo, goldMat);
+      dialMesh.rotation.z = Math.PI / 2;
+      dialMesh.position.set(1.42, 0.25, -0.2);
+      group.add(dialMesh);
+
+      // Spatial Audio Elastic Headband Strap
+      const bandGeo = new THREE.TorusGeometry(1.3, 0.12, 16, 64, Math.PI);
+      const bandMesh = new THREE.Mesh(bandGeo, primaryMat);
       bandMesh.rotation.x = Math.PI / 2;
+      bandMesh.position.set(0, 0, -0.5);
       group.add(bandMesh);
     }
 
@@ -153,9 +322,12 @@ class Product3DViewer {
     const size = box.getSize(new THREE.Vector3());
     group.position.sub(center);
 
-    // Adjust Grid Floor to be right under the centered model
+    // Adjust Grid Floor and Shadow Plane to sit right under the model
     if (this.gridHelper) {
       this.gridHelper.position.y = -(size.y / 2) - 0.2;
+    }
+    if (this.contactShadow) {
+      this.contactShadow.position.y = -(size.y / 2) - 0.19;
     }
 
     // Outer wrapper for smooth rotation around origin (0, 0, 0)
