@@ -1405,3 +1405,47 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* ── Password Show / Hide Toggle ───────────────────────────────────────────── */
+.password-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrap .form-input {
+  width: 100%;
+  padding-right: 3rem; /* leave room for the toggle button */
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  transition: color 0.2s ease, transform 0.2s ease;
+  line-height: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.password-toggle-btn:hover {
+  color: var(--accent-cyan);
+  transform: translateY(-50%) scale(1.15);
+}
+
+.password-toggle-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.password-toggle-btn svg {
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}

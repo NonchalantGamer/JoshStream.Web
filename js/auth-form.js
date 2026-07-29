@@ -67,6 +67,31 @@ class AuthHandler {
       });
     }
 
+    // ── Password show / hide toggle ─────────────────────────────────────────
+    const pwdToggle  = document.getElementById('auth-password-toggle');
+    const pwdInput   = document.getElementById('auth-password');
+    const eyeShow    = document.getElementById('eye-icon-show');
+    const eyeHide    = document.getElementById('eye-icon-hide');
+
+    if (pwdToggle && pwdInput) {
+      pwdToggle.addEventListener('click', () => {
+        const isHidden = pwdInput.type === 'password';
+        pwdInput.type  = isHidden ? 'text' : 'password';
+
+        // Swap icons
+        if (eyeShow) eyeShow.style.display = isHidden ? 'none'  : '';
+        if (eyeHide) eyeHide.style.display = isHidden ? ''      : 'none';
+
+        // Update aria-label for accessibility
+        pwdToggle.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+
+        // Keep cursor at end of input
+        const len = pwdInput.value.length;
+        pwdInput.setSelectionRange(len, len);
+        pwdInput.focus();
+      });
+    }
+
     // ── Shopify OAuth button (kept as UX demo) ──────────────────────────────
     const shopifyBtn = document.getElementById('oauth-shopify-btn');
     if (shopifyBtn) {
