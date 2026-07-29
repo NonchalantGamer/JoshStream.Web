@@ -39,6 +39,7 @@
         <li><a class="nav-link" data-navigate="about">About</a></li>
         <li><a class="nav-link" data-navigate="blog">Blog</a></li>
         <li><a class="nav-link" data-navigate="contact">Contact</a></li>
+        <li><a class="nav-link" data-navigate="profile" id="nav-profile-link" style="display:none;">My Profile</a></li>
       </ul>
 
       <div class="nav-actions">
@@ -66,6 +67,7 @@
         <li><a class="nav-link" data-navigate="about">About</a></li>
         <li><a class="nav-link" data-navigate="blog">Blog</a></li>
         <li><a class="nav-link" data-navigate="contact">Contact</a></li>
+        <li><a class="nav-link" data-navigate="profile" id="mobile-nav-profile-link" style="display:none;">👤 My Profile</a></li>
       </ul>
       <div class="mobile-nav-actions">
         <button class="btn btn-secondary" style="width: 100%;" data-navigate="auth">Sign In</button>
@@ -854,6 +856,181 @@
               Sign In to Dashboard ➔
             </button>
           </form>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 👤 9. USER PROFILE & DASHBOARD VIEW        -->
+    <!-- ========================================== -->
+    <section id="view-profile" class="view-container">
+      <div class="container">
+        
+        <div class="section-header" style="margin-bottom: 2.5rem;">
+          <div class="section-tag">Account & Settings</div>
+          <h1 class="section-title">User Profile & <span class="text-gradient">Dashboard</span></h1>
+          <p class="section-desc">Manage your account credentials, view 3D video conversion credits, and access your developer API keys.</p>
+        </div>
+
+        <!-- Signed-out state banner (hidden when logged in) -->
+        <div id="profile-signed-out-banner" class="glass-card" style="padding: 3rem; text-align: center; margin-bottom: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🔐</div>
+          <h3 style="font-size: 1.5rem; margin-bottom: 0.8rem;">Sign in to access your dashboard</h3>
+          <p style="color: var(--text-muted); margin-bottom: 1.8rem;">View your 3D asset library, manage API keys, and track your monthly credits.</p>
+          <button class="btn btn-primary" data-navigate="auth" style="padding: 0.9rem 2.5rem; font-size: 1rem;">Sign In with Google ➔</button>
+        </div>
+
+        <div class="profile-dashboard-grid" style="display: none; grid-template-columns: 1fr 1.6fr; gap: 2.5rem; align-items: start;">
+          
+          <!-- Left Column: User Card & Personal Settings -->
+          <div style="display: flex; flex-direction: column; gap: 2rem;">
+            
+            <div class="glass-card" style="padding: 2.2rem; text-align: center;">
+              <div style="position: relative; width: 90px; height: 90px; margin: 0 auto 1.2rem auto;">
+                <img id="profile-avatar-img" src="https://api.dicebear.com/7.x/avataaars/svg?seed=user" alt="Profile Avatar" style="width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: var(--primary); object-fit: cover;">
+                <div style="position: absolute; bottom: 0; right: 0; background: #10B981; width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--bg-dark);" title="Account Active"></div>
+              </div>
+
+              <h3 id="profile-display-name" style="font-size: 1.4rem; margin-bottom: 0.2rem;">Signed In User</h3>
+              <p id="profile-display-email" style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1rem;">user@example.com</p>
+
+              <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 184, 0, 0.15); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-weight: 700; font-size: 0.78rem; padding: 0.3rem 0.9rem; border-radius: var(--radius-full); text-transform: uppercase;">
+                ⭐ Pro SaaS Member
+              </div>
+            </div>
+
+            <!-- Profile Info Form -->
+            <div class="glass-card" style="padding: 2rem;">
+              <h4 style="font-size: 1.15rem; margin-bottom: 1.4rem; color: #FFF; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Personal Information
+              </h4>
+
+              <form id="profile-edit-form" style="display:none;">
+                <div class="form-group">
+                  <label class="form-label">Full Name</label>
+                  <input type="text" id="profile-input-name" class="form-input" placeholder="Your Full Name">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" id="profile-input-email" class="form-input" placeholder="name@company.com">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Company / Store Name</label>
+                  <input type="text" id="profile-input-company" class="form-input" placeholder="e.g. JoshStream Apparel">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Avatar Image URL</label>
+                  <input type="url" id="profile-input-avatar" class="form-input" placeholder="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+                  Save Profile Changes 💾
+                </button>
+              </form>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Usage Dashboard & API Keys -->
+          <div style="display: flex; flex-direction: column; gap: 2rem;">
+            
+            <!-- Usage & Credits Card -->
+            <div class="glass-card" style="padding: 2.2rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+                <div>
+                  <h4 style="font-size: 1.2rem; color: #FFF;">Monthly AI 3D Credits</h4>
+                  <p style="color: var(--text-muted); font-size: 0.88rem;">Video-to-3D model conversion quota</p>
+                </div>
+                <button class="btn btn-cyan" style="padding: 0.4rem 1rem; font-size: 0.82rem;" data-navigate="pricing">Upgrade Plan ➔</button>
+              </div>
+
+              <div style="margin: 1.5rem 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 600; margin-bottom: 0.6rem;">
+                  <span>Credits Used</span>
+                  <span style="color: var(--accent-cyan);">34 / 50 Credits</span>
+                </div>
+                <div style="width: 100%; height: 10px; background: rgba(255, 255, 255, 0.1); border-radius: var(--radius-full); overflow: hidden;">
+                  <div style="width: 68%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent-cyan));"></div>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center; margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border-glass);">
+                <div>
+                  <div style="font-size: 1.4rem; font-weight: 800; color: #FFF;">16</div>
+                  <div style="font-size: 0.78rem; color: var(--text-muted);">Remaining</div>
+                </div>
+                <div>
+                  <div style="font-size: 1.4rem; font-weight: 800; color: var(--accent-cyan);">99.8%</div>
+                  <div style="font-size: 0.78rem; color: var(--text-muted);">Conversion Acc.</div>
+                </div>
+                <div>
+                  <div style="font-size: 1.4rem; font-weight: 800; color: #10B981;">Unlimited</div>
+                  <div style="font-size: 0.78rem; color: var(--text-muted);">WebAR Views</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- API Keys & Developer Credentials -->
+            <div class="glass-card" style="padding: 2.2rem;">
+              <h4 style="font-size: 1.15rem; margin-bottom: 1.2rem; color: #FFF; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                Developer API Credentials
+              </h4>
+
+              <div class="form-group">
+                <label class="form-label">Live JoshStream API Key</label>
+                <div style="display: flex; gap: 0.8rem;">
+                  <input type="text" readonly id="profile-api-key-input" class="form-input" value="js_live_89a74c2e91b0f425816" style="font-family: monospace; color: var(--accent-cyan);">
+                  <button class="btn btn-secondary" style="padding: 0.6rem 1rem; flex-shrink: 0;" onclick="navigator.clipboard.writeText('js_live_89a74c2e91b0f425816'); if (window.showToast) window.showToast('API Key copied to clipboard! 📋');">
+                    Copy Key
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Webhook Endpoint URL</label>
+                <input type="text" readonly class="form-input" value="https://josh-stream-web.vercel.app/api/webhooks/3d-events" style="font-family: monospace; color: var(--text-muted);">
+              </div>
+            </div>
+
+            <!-- Recent 3D Assets Table -->
+            <div class="glass-card" style="padding: 2rem;">
+              <h4 style="font-size: 1.15rem; margin-bottom: 1.2rem; color: #FFF;">Your Converted 3D Assets</h4>
+              
+              <div style="display: flex; flex-direction: column; gap: 1rem;">
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
+                  <div style="display: flex; align-items: center; gap: 0.8rem;">
+                    <div style="width: 36px; height: 36px; background: rgba(255, 42, 95, 0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.1rem;">👟</div>
+                    <div>
+                      <div style="font-weight: 600; font-size: 0.92rem; color: #FFF;">Performance Air Sneaker</div>
+                      <div style="font-size: 0.78rem; color: var(--text-muted);">GLTF • 3.2 MB • Ready</div>
+                    </div>
+                  </div>
+                  <button class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.78rem;" data-navigate="home">View 3D 👁️</button>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
+                  <div style="display: flex; align-items: center; gap: 0.8rem;">
+                    <div style="width: 36px; height: 36px; background: rgba(255, 184, 0, 0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); font-size: 1.1rem;">🪑</div>
+                    <div>
+                      <div style="font-weight: 600; font-size: 0.92rem; color: #FFF;">Eames Modern Lounge Chair</div>
+                      <div style="font-size: 0.78rem; color: var(--text-muted);">USDZ • 5.1 MB • Ready</div>
+                    </div>
+                  </div>
+                  <button class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.78rem;" data-navigate="use-cases">View 3D 👁️</button>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
         </div>
 
       </div>
