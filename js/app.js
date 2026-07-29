@@ -59,7 +59,12 @@ class AppRouter {
   }
 
   handleHashRoute() {
-    const hash = window.location.hash.replace('#', '');
+    const rawHash = window.location.hash;
+    // Ignore Supabase OAuth tokens and errors in URL hash
+    if (!rawHash || rawHash.includes('access_token') || rawHash.includes('error=') || rawHash.includes('refresh_token')) {
+      return;
+    }
+    const hash = rawHash.replace('#', '');
     if (hash && document.getElementById(`view-${hash}`)) {
       this.navigateTo(hash);
     }

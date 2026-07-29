@@ -1,34 +1,49 @@
-/* JoshStream Web - Supabase Auth Service */
+/* JoshStream Web - Supabase Google Auth & Session Engine */
 
 class GoogleAuthService {
   constructor() {
     this.user = null;
     this.supabase = null;
-    this._ready = this.init();
+    this.init();
   }
 
   async init() {
+    // 1. Restore local session cache immediately for fast render
+    const savedSession = localStorage.getItem('joshstream_user_session');
+    if (savedSession) {
+      try {
+        this.user = JSON.parse(savedSession);
+        this.updateNavUserUI();
+      } catch {
+        localStorage.removeItem('joshstream_user_session');
+      }
+    }
+
     if (!window.supabaseClient) {
-      console.warn('[JoshStream] Supabase client not initialized.');
+      console.warn('[JoshStream] Supabase client not found.');
       return;
     }
 
     this.supabase = window.supabaseClient;
 
-
-    // Listen for auth state changes
+    // 2. Attach Auth State Change listener FIRST before processing URL session
     this.supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('[JoshStream] Auth event:', event, session?.user?.email);
+      console.log('[JoshStream] Supabase Auth Event:', event, session?.user?.email);
 
       if (session?.user) {
         this._setUser(session.user);
         await this._syncProfile(session.user);
 
-        if (event === 'SIGNED_IN') {
-          if (window.showToast) window.showToast(`Welcome, ${this.user.name}! 🎉`);
+        // Clean up OAuth tokens from URL location bar
+        if (window.location.hash.includes('access_token') || window.location.search.includes('code=')) {
+          window.history.replaceState(null, document.title, window.location.pathname);
+        }
+
+        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
+          if (window.showToast) window.showToast(`Signed in as ${this.user.name}! 🎉`);
           setTimeout(() => {
             if (window.appRouter) window.appRouter.navigateTo('home');
-          }, 400);
+          }, 300);
         }
       } else if (event === 'SIGNED_OUT') {
         this.user = null;
@@ -37,52 +52,54 @@ class GoogleAuthService {
       }
     });
 
-    // Check for active session on page load
-    const { data: { session }, error } = await this.supabase.auth.getSession();
-    if (error) console.error('[JoshStream] getSession error:', error.message);
-
-    if (session?.user) {
-      console.log('[JoshStream] Existing session found:', session.user.email);
-      this._setUser(session.user);
-    } else {
-      // Fallback: restore from localStorage while Supabase resolves
-      const saved = localStorage.getItem('joshstream_user_session');
-      if (saved) {
-        try {
-          this.user = JSON.parse(saved);
-          this.updateNavUserUI();
-        } catch {
-          localStorage.removeItem('joshstream_user_session');
-        }
+    // 3. Explicitly verify current active session from Supabase
+    try {
+      const { data: { session }, error } = await this.supabase.auth.getSession();
+      if (error) console.warn('[JoshStream] getSession warning:', error.message);
+      if (session?.user) {
+        this._setUser(session.user);
+        this._syncProfile(session.user);
       }
+    } catch (err) {
+      console.warn('[JoshStream] Auth session check note:', err.message);
     }
   }
 
   _setUser(sbUser) {
+    const displayName = sbUser.user_metadata?.full_name || 
+                        sbUser.user_metadata?.name || 
+                        (sbUser.email ? sbUser.email.split('@')[0] : 'User');
+                        
+    const avatar = sbUser.user_metadata?.avatar_url || 
+                   sbUser.user_metadata?.picture || 
+                   `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(sbUser.email || 'user')}`;
+
     this.user = {
       uid: sbUser.id,
-      name: sbUser.user_metadata?.full_name || sbUser.email.split('@')[0],
-      email: sbUser.email,
-      photo: sbUser.user_metadata?.avatar_url ||
-             `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(sbUser.email)}`,
-      provider: 'Supabase Google OAuth'
+      name: displayName,
+      email: sbUser.email || '',
+      photo: avatar,
+      provider: 'Google OAuth (Supabase)'
     };
+
     localStorage.setItem('joshstream_user_session', JSON.stringify(this.user));
     this.updateNavUserUI();
   }
 
   async signInWithGoogle() {
     if (!this.supabase) {
-      if (window.showToast) window.showToast('Backend not configured.', 'error');
+      if (window.showToast) window.showToast('Supabase backend not initialized.', 'error');
       return;
     }
 
     if (window.showToast) window.showToast('Redirecting to Google sign-in...');
 
+    const redirectUrl = window.location.origin + window.location.pathname;
+
     const { error } = await this.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + window.location.pathname,
+        redirectTo: redirectUrl,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent'
@@ -99,14 +116,20 @@ class GoogleAuthService {
   async _syncProfile(sbUser) {
     if (!this.supabase) return;
     try {
+      const displayName = sbUser.user_metadata?.full_name || 
+                          sbUser.user_metadata?.name || 
+                          (sbUser.email ? sbUser.email.split('@')[0] : 'User');
+      const avatar = sbUser.user_metadata?.avatar_url || sbUser.user_metadata?.picture || null;
+
       const { error } = await this.supabase.from('profiles').upsert({
         id: sbUser.id,
-        name: sbUser.user_metadata?.full_name || sbUser.email.split('@')[0],
+        name: displayName,
         email: sbUser.email,
-        avatar_url: sbUser.user_metadata?.avatar_url || null,
+        avatar_url: avatar,
         updated_at: new Date().toISOString()
       }, { onConflict: 'id' });
-      if (error) console.warn('[JoshStream] Profile sync error:', error.message);
+
+      if (error) console.warn('[JoshStream] Profile sync note:', error.message);
     } catch (err) {
       console.warn('[JoshStream] Profile sync exception:', err.message);
     }
@@ -114,7 +137,11 @@ class GoogleAuthService {
 
   async signOut() {
     if (this.supabase) {
-      await this.supabase.auth.signOut();
+      try {
+        await this.supabase.auth.signOut();
+      } catch (e) {
+        console.warn('Sign out note:', e);
+      }
     }
     this.user = null;
     localStorage.removeItem('joshstream_user_session');
