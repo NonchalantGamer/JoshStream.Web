@@ -9,12 +9,15 @@
   <meta property="og:title" content="JoshStream Web - Turn Video into Interactive 3D & AR">
   <meta property="og:description" content="Boost conversions by 94% and reduce returns by 40% with AI-generated 3D product experiences.">
   
-  <!-- Critical Inline CSS: Prevents background flash before components load -->
+  <!-- Critical Inline CSS: Prevents background flash and optimizes mobile 60fps load -->
   <style>
     html, body {
       background-color: #0F070A !important;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
   </style>
 
