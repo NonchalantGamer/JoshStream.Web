@@ -457,7 +457,7 @@ class Product3DViewer {
     if (!modal) {
       modal = document.createElement('div');
       modal.id = 'webar-modal';
-      modal.className = 'modal-overlay';
+      modal.className = 'modal-overlay active';
       modal.innerHTML = `
         <div class="modal-box glass-card" style="max-width: 440px; text-align: center; padding: 2.2rem;">
           <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">📱</div>
@@ -474,6 +474,8 @@ class Product3DViewer {
         </div>
       `;
       document.body.appendChild(modal);
+    } else {
+      modal.classList.add('active');
     }
   }
 }
