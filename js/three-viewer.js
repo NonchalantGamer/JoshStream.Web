@@ -12,7 +12,7 @@ class Product3DViewer {
     this.isRotating = true;
     this.isWireframe = false;
     this.currentColor = '#FF2A5F';
-    this.currentProduct = 'sneaker';
+    this.currentProduct = 'chair';
 
     this.init();
   }
