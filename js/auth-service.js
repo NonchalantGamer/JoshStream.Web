@@ -158,7 +158,7 @@ class GoogleAuthService {
   }
 
   // ── Save profile edits from the profile form ────────────────────────────────
-  async saveProfileEdits(newName, newEmail, newCompany, newAvatar) {
+  async saveProfileEdits(newName, newEmail, newCompany) {
     if (!this.user) {
       if (window.showToast) window.showToast('You must be signed in to update your profile.', 'error');
       return;
@@ -166,8 +166,11 @@ class GoogleAuthService {
 
     if (newName) this.user.name = newName;
     if (newEmail) this.user.email = newEmail;
-    if (newAvatar) this.user.photo = newAvatar;
     if (newCompany) this.user.company = newCompany;
+    if (this._pendingAvatarDataUrl) {
+      this.user.photo = this._pendingAvatarDataUrl;
+      this._pendingAvatarDataUrl = null;
+    }
 
     localStorage.setItem('joshstream_user_session', JSON.stringify(this.user));
 
@@ -202,6 +205,7 @@ class GoogleAuthService {
     }
     this._sessionHandled = false;
     this.user = null;
+    this._pendingAvatarDataUrl = null;
     localStorage.removeItem('joshstream_user_session');
     this.updateNavUserUI();
     this._populateProfilePage();
@@ -219,10 +223,13 @@ class GoogleAuthService {
     const inputName = document.getElementById('profile-input-name');
     const inputEmail = document.getElementById('profile-input-email');
     const inputCompany = document.getElementById('profile-input-company');
-    const inputAvatar = document.getElementById('profile-input-avatar');
     const profileForm = document.getElementById('profile-edit-form');
     const signedOutBanner = document.getElementById('profile-signed-out-banner');
     const profileGrid = document.querySelector('#view-profile .profile-dashboard-grid');
+
+    const fileInput = document.getElementById('profile-avatar-file-input');
+    const changeAvatarBtn = document.getElementById('change-avatar-btn');
+    const triggerAvatarBtn = document.getElementById('upload-avatar-trigger-btn');
 
     // Show/hide the My Profile nav links
     const navProfileLink = document.getElementById('nav-profile-link');
@@ -231,13 +238,12 @@ class GoogleAuthService {
     if (mobileNavProfileLink) mobileNavProfileLink.style.display = user ? '' : 'none';
 
     if (user) {
-      if (avatarImg) avatarImg.src = user.photo;
+      if (avatarImg) avatarImg.src = this._pendingAvatarDataUrl || user.photo;
       if (displayName) displayName.textContent = user.name;
       if (displayEmail) displayEmail.textContent = user.email;
       if (inputName) inputName.value = user.name || '';
       if (inputEmail) inputEmail.value = user.email || '';
       if (inputCompany) inputCompany.value = user.company || '';
-      if (inputAvatar) inputAvatar.value = user.photo || '';
       if (profileForm) profileForm.style.display = 'block';
       if (profileGrid) profileGrid.style.display = 'grid';
       if (signedOutBanner) signedOutBanner.style.display = 'none';
@@ -258,16 +264,74 @@ class GoogleAuthService {
         const n = document.getElementById('profile-input-name')?.value;
         const em = document.getElementById('profile-input-email')?.value;
         const co = document.getElementById('profile-input-company')?.value;
-        const av = document.getElementById('profile-input-avatar')?.value;
-        this.saveProfileEdits(n, em, co, av);
+        this.saveProfileEdits(n, em, co);
       });
     }
 
-    // Avatar live preview from URL input
-    if (inputAvatar && avatarImg && !inputAvatar._previewAttached) {
-      inputAvatar._previewAttached = true;
-      inputAvatar.addEventListener('input', () => {
-        if (inputAvatar.value) avatarImg.src = inputAvatar.value;
+    // Bind Gallery File Picker button triggers
+    const triggerPicker = () => {
+      if (fileInput) fileInput.click();
+    };
+
+    if (changeAvatarBtn && !changeAvatarBtn._pickerAttached) {
+      changeAvatarBtn._pickerAttached = true;
+      changeAvatarBtn.addEventListener('click', triggerPicker);
+    }
+
+    if (triggerAvatarBtn && !triggerAvatarBtn._pickerAttached) {
+      triggerAvatarBtn._pickerAttached = true;
+      triggerAvatarBtn.addEventListener('click', triggerPicker);
+    }
+
+    // Handle File Selection & Image Compression
+    if (fileInput && !fileInput._changeAttached) {
+      fileInput._changeAttached = true;
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+          if (window.showToast) window.showToast('Please select a valid image file.', 'error');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            // Resize image to max 250x250 using Canvas
+            const canvas = document.createElement('canvas');
+            const maxDim = 250;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > maxDim) {
+                height *= maxDim / width;
+                width = maxDim;
+              }
+            } else {
+              if (height > maxDim) {
+                width *= maxDim / height;
+                height = maxDim;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            this._pendingAvatarDataUrl = compressedDataUrl;
+
+            // Live preview immediately
+            if (avatarImg) avatarImg.src = compressedDataUrl;
+            if (window.showToast) window.showToast('New profile picture preview loaded! Click "Save Changes" to apply. 📸');
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
       });
     }
   }
