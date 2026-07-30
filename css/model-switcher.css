@@ -4,7 +4,6 @@
   align-items: center;
   justify-content: center;
   gap: 0;
-  margin-top: 0.75rem;
   background: rgba(15, 8, 18, 0.75);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -12,9 +11,63 @@
   border-radius: 999px;
   padding: 0.28rem;
   width: fit-content;
-  margin-inline: auto;
+  /* Always anchored to the centre of the canvas column */
+  align-self: center;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 42, 95, 0.12);
 }
+
+.model-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 1rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.model-pill:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Sneaker / Chair / Watch active — crimson tint */
+.model-pill.active {
+  background: rgba(255, 42, 95, 0.2);
+  color: #FFF;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(255, 42, 95, 0.5);
+}
+
+.model-pill.active svg {
+  stroke: #FF2A5F;
+}
+
+/* Vector pill active — distinct cyan glow to signal wireframe mode */
+#vector-pill.active {
+  background: rgba(0, 240, 255, 0.18);
+  color: #00F0FF;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.55), 0 0 10px rgba(0, 240, 255, 0.25);
+}
+
+#vector-pill.active svg {
+  stroke: #00F0FF;
+}
+
+.switcher-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
 
 .model-pill {
   display: inline-flex;

@@ -201,9 +201,9 @@
             </div>
           </div>
 
-          <!-- Live 3D Interactive Canvas Window -->
-          <div>
-            <div class="canvas-card">
+          <!-- Live 3D Interactive Canvas Window + Switcher — stacked column -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+            <div class="canvas-card" style="width: 100%;">
               <div class="canvas-floating-badge">
                 <span class="pulse-dot"></span> REAL-TIME WEBGL RENDER
               </div>
@@ -234,24 +234,29 @@
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Minimalistic floating model switcher strip below canvas -->
-          <div class="model-switcher-strip">
-            <button class="model-pill active" onclick="this.closest('.model-switcher-strip').querySelectorAll('.model-pill').forEach(b=>b.classList.remove('active')); this.classList.add('active'); if(window.heroViewer) window.heroViewer.loadProductModel('sneaker')">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"></path></svg>
-              Sneaker
-            </button>
-            <div class="switcher-divider"></div>
-            <button class="model-pill" onclick="this.closest('.model-switcher-strip').querySelectorAll('.model-pill').forEach(b=>b.classList.remove('active')); this.classList.add('active'); if(window.heroViewer) window.heroViewer.loadProductModel('chair')">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
-              Chair
-            </button>
-            <div class="switcher-divider"></div>
-            <button class="model-pill" onclick="this.closest('.model-switcher-strip').querySelectorAll('.model-pill').forEach(b=>b.classList.remove('active')); this.classList.add('active'); if(window.heroViewer) window.heroViewer.loadProductModel('watch')">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="7"/><polyline points="12 9 12 12 13.5 13.5"/><path d="M16.5 7.5v-3a2 2 0 0 0-2-2h-5a2 2 0 0 0-2 2v3M16.5 16.5v3a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-3"/></svg>
-              Watch
-            </button>
+            <!-- Minimalistic floating model switcher strip — directly below canvas -->
+            <div class="model-switcher-strip">
+              <button class="model-pill active" data-model="sneaker" onclick="switchModel(this,'sneaker')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 12h2l2-7 4 14 3-9 2 2h7"/></svg>
+                Sneaker
+              </button>
+              <div class="switcher-divider"></div>
+              <button class="model-pill" data-model="chair" onclick="switchModel(this,'chair')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="10" width="18" height="4" rx="1"/><path d="M5 14v5M19 14v5M5 10V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/></svg>
+                Chair
+              </button>
+              <div class="switcher-divider"></div>
+              <button class="model-pill" data-model="watch" onclick="switchModel(this,'watch')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="6"/><polyline points="12 10 12 12 13.5 13.5"/><path d="M14.5 2h-5l-.5 4h6zM14.5 22h-5l.5-4h4z"/></svg>
+                Watch
+              </button>
+              <div class="switcher-divider"></div>
+              <button class="model-pill" data-model="vector" id="vector-pill" onclick="toggleVector(this)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Vector
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1314,5 +1319,42 @@
   <script src="js/contact-form.js"></script>
   <script src="js/auth-form.js"></script>
   <script src="js/app.js"></script>
+
+  <script>
+    // Model Switcher Strip — syncs both toolbar tabs and the pill strip
+    function switchModel(btn, model) {
+      // Mark active pill
+      document.querySelectorAll('.model-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      // If Vector mode was on, turn it off
+      if (window._vectorMode) {
+        window._vectorMode = false;
+        if (window.heroViewer && window.heroViewer.isWireframe) {
+          window.heroViewer.toggleWireframe();
+        }
+      }
+      // Load the model
+      if (window.heroViewer) window.heroViewer.loadProductModel(model);
+      // Sync toolbar viewer-tabs
+      document.querySelectorAll('.viewer-tab').forEach(t => {
+        t.classList.toggle('active', t.textContent.trim().toLowerCase() === model);
+      });
+    }
+
+    // Vector View — toggles wireframe on the current model
+    function toggleVector(btn) {
+      window._vectorMode = !window._vectorMode;
+      document.querySelectorAll('.model-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (window.heroViewer) {
+        // Force wireframe state to match vectorMode
+        if (window._vectorMode && !window.heroViewer.isWireframe) {
+          window.heroViewer.toggleWireframe();
+        } else if (!window._vectorMode && window.heroViewer.isWireframe) {
+          window.heroViewer.toggleWireframe();
+        }
+      }
+    }
+  </script>
 </body>
 </html>
