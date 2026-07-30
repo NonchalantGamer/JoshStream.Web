@@ -147,12 +147,54 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
   color: #FFF;
   cursor: pointer;
+  transition: gap 0.3s ease;
+}
+
+.brand-logo:hover {
+  gap: 0.9rem;
+}
+
+/* Brand Name — animated gradient sweep on hover */
+.brand-name {
+  background: linear-gradient(90deg, #FFF 0%, #FFF 40%, var(--primary) 50%, var(--accent-cyan) 60%, #FFF 80%, #FFF 100%);
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-position: 0% center;
+  transition: background-position 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.brand-logo:hover .brand-name {
+  background-position: 100% center;
+}
+
+.brand-dot-web {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--primary));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Icon Morphism — shape-shifting animated gradient */
+@keyframes iconGradientRotate {
+  0%   { background-position: 0% 50%; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+  25%  { border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%; }
+  50%  { background-position: 100% 50%; border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%; }
+  75%  { border-radius: 33% 67% 58% 42% / 63% 68% 32% 37%; }
+  100% { background-position: 0% 50%; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+}
+
+@keyframes iconGlowPulse {
+  0%, 100% { box-shadow: 0 0 14px rgba(255, 42, 95, 0.55), 0 0 0px rgba(255, 184, 0, 0); }
+  50%       { box-shadow: 0 0 28px rgba(255, 42, 95, 0.9), 0 0 22px rgba(255, 184, 0, 0.55); }
 }
 
 .brand-icon {
   width: 38px;
   height: 38px;
-  background: linear-gradient(135deg, var(--primary), var(--accent-blue));
+  background: linear-gradient(135deg, var(--primary), var(--accent-blue), var(--accent-cyan), var(--primary));
+  background-size: 300% 300%;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -160,6 +202,24 @@ h1, h2, h3, h4, h5, h6 {
   color: #FFF;
   font-weight: 900;
   box-shadow: 0 0 18px rgba(255, 42, 95, 0.55);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  animation: iconGlowPulse 3s ease-in-out infinite;
+  will-change: transform, box-shadow;
+  flex-shrink: 0;
+}
+
+.brand-logo:hover .brand-icon {
+  animation: iconGradientRotate 2.5s ease-in-out infinite, iconGlowPulse 1.5s ease-in-out infinite;
+  transform: scale(1.12) rotate(-4deg);
+}
+
+.brand-icon-svg {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 0 4px rgba(255,255,255,0.4));
+}
+
+.brand-logo:hover .brand-icon-svg {
+  transform: scale(1.15);
 }
 
 .nav-links {
@@ -169,21 +229,74 @@ h1, h2, h3, h4, h5, h6 {
   list-style: none;
 }
 
+/* Fluid Hover Text Animation — dual-layer character lift */
+@keyframes navTextRise {
+  0%   { transform: translateY(0);   opacity: 1; }
+  45%  { transform: translateY(-120%); opacity: 0; }
+  50%  { transform: translateY(120%);  opacity: 0; }
+  100% { transform: translateY(0);   opacity: 1; }
+}
+
 .nav-link {
   color: var(--text-muted);
   text-decoration: none;
   font-weight: 500;
   font-size: 0.95rem;
-  transition: color 0.2s ease;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  /* no transition on color — handled by pseudo-element */
+}
+
+/* The visible label — slides up on hover */
+.nav-link > span {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  will-change: transform, opacity;
+}
+
+.nav-link:hover > span,
+.nav-link.active > span {
+  transform: translateY(-110%);
+  opacity: 0;
+}
+
+/* Ghost duplicate label — slides in from below on hover */
+.nav-link::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(110%);
+  opacity: 0;
+  font-weight: 600;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--primary));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  will-change: transform, opacity;
+  white-space: nowrap;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Active underline glow */
+.nav-link.active {
   position: relative;
 }
 
-.nav-link:hover, .nav-link.active {
-  color: #FFFFFF;
-}
-
-.nav-link.active::after {
+.nav-link.active::before {
   content: '';
   position: absolute;
   bottom: -6px;
@@ -192,6 +305,7 @@ h1, h2, h3, h4, h5, h6 {
   height: 2px;
   background: linear-gradient(90deg, var(--accent-cyan), var(--primary));
   border-radius: var(--radius-full);
+  box-shadow: 0 0 8px var(--accent-cyan);
 }
 
 .nav-actions {

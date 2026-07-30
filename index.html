@@ -39,19 +39,24 @@
   <header>
     <nav class="navbar" aria-label="Main Navigation">
       <a class="brand-logo" data-navigate="home">
-        <div class="brand-icon">J</div>
-        <span>JoshStream<span style="color: var(--accent-cyan);">.Web</span></span>
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="brand-icon-svg">
+            <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"></path>
+            <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor"></polygon>
+          </svg>
+        </div>
+        <span class="brand-name">JoshStream<span class="brand-dot-web">.Web</span></span>
       </a>
 
       <ul class="nav-links">
-        <li><a class="nav-link active" data-navigate="home">Home</a></li>
-        <li><a class="nav-link" data-navigate="features">Features</a></li>
-        <li><a class="nav-link" data-navigate="pricing">Pricing</a></li>
-        <li><a class="nav-link" data-navigate="use-cases">Use Cases</a></li>
-        <li><a class="nav-link" data-navigate="about">About</a></li>
-        <li><a class="nav-link" data-navigate="blog">Blog</a></li>
-        <li><a class="nav-link" data-navigate="contact">Contact</a></li>
-        <li><a class="nav-link" data-navigate="profile" id="nav-profile-link" style="display:none;">My Profile</a></li>
+        <li><a class="nav-link active" data-navigate="home" data-text="Home"><span>Home</span></a></li>
+        <li><a class="nav-link" data-navigate="features" data-text="Features"><span>Features</span></a></li>
+        <li><a class="nav-link" data-navigate="pricing" data-text="Pricing"><span>Pricing</span></a></li>
+        <li><a class="nav-link" data-navigate="use-cases" data-text="Use Cases"><span>Use Cases</span></a></li>
+        <li><a class="nav-link" data-navigate="about" data-text="About"><span>About</span></a></li>
+        <li><a class="nav-link" data-navigate="blog" data-text="Blog"><span>Blog</span></a></li>
+        <li><a class="nav-link" data-navigate="contact" data-text="Contact"><span>Contact</span></a></li>
+        <li><a class="nav-link" data-navigate="profile" id="nav-profile-link" data-text="My Profile" style="display:none;"><span>My Profile</span></a></li>
       </ul>
 
       <div class="nav-actions">
