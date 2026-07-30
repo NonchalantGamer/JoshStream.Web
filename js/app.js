@@ -113,6 +113,7 @@ class AppRouter {
       window.simMgr = new window.VideoTo3DSimulator();
       window.priceCalc = new window.PricingCalculator();
       window.embedMgr = new window.EmbedBuilderManager();
+      window.paymentHandler = new window.PaymentHandler();
       window.useCasesMgr = new window.UseCasesManager();
       window.blogMgr = new window.BlogManager();
       window.contactHandler = new window.ContactFormHandler();
