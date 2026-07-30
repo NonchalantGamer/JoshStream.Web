@@ -247,6 +247,8 @@ class GoogleAuthService {
       if (profileForm) profileForm.style.display = 'block';
       if (profileGrid) profileGrid.style.display = 'grid';
       if (signedOutBanner) signedOutBanner.style.display = 'none';
+
+      this.renderDashboardAssets();
     } else {
       if (avatarImg) avatarImg.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=guest';
       if (displayName) displayName.textContent = 'Guest User';
@@ -373,6 +375,80 @@ class GoogleAuthService {
         if (v && window.appRouter) { e.preventDefault(); window.appRouter.navigateTo(v); }
       });
     });
+  }
+
+  // ── Register New Asset ──────────────────────────────────────────────────────
+  registerNewAsset(asset) {
+    const assets = this.getStoredAssets();
+    const newAsset = {
+      id: 'asset_' + Date.now(),
+      title: asset.title || '3D Product Model',
+      modelType: asset.modelType || 'sneaker',
+      status: asset.status || 'Ready',
+      date: asset.date || new Date().toLocaleDateString()
+    };
+    assets.unshift(newAsset);
+    localStorage.setItem('joshstream_user_assets', JSON.stringify(assets));
+    this.renderDashboardAssets();
+  }
+
+  getStoredAssets() {
+    try {
+      const stored = localStorage.getItem('joshstream_user_assets');
+      if (stored) return JSON.parse(stored);
+    } catch (e) { /* ignore */ }
+
+    // Default sample assets
+    return [
+      { id: 'asset_1', title: 'Air Jordan Spatial Sneaker', modelType: 'sneaker', status: 'Ready', date: 'May 14, 2026' },
+      { id: 'asset_2', title: 'Eames Lounge Chair 3D', modelType: 'chair', status: 'Ready', date: 'May 12, 2026' },
+      { id: 'asset_3', title: 'Chronos Smartwatch AR', modelType: 'watch', status: 'Ready', date: 'May 08, 2026' }
+    ];
+  }
+
+  // ── Render Dashboard Asset List ─────────────────────────────────────────────
+  renderDashboardAssets() {
+    const container = document.getElementById('dashboard-assets-list');
+    if (!container) return;
+
+    const assets = this.getStoredAssets();
+    if (!assets.length) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+          <p>No 3D assets generated yet. Upload a video above to create your first spatial model! 🚀</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = assets.map(item => `
+      <div class="glass-card" style="padding: 1rem 1.2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-radius: 12px; margin-bottom: 0.8rem; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(0, 240, 255, 0.1); border: 1px solid var(--accent-cyan); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">📦</div>
+          <div>
+            <h5 style="color: #FFF; font-size: 0.98rem; margin-bottom: 0.2rem;">${item.title}</h5>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">${item.date} • Format: .GLTF / .USDZ</span>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+          <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; color: #10B981; font-weight: 700; font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 20px;">
+            ✓ ${item.status}
+          </span>
+          <button class="btn btn-secondary" style="padding: 0.35rem 0.8rem; font-size: 0.8rem;" onclick="if(window.heroViewer){ window.heroViewer.loadProductModel('${item.modelType}'); window.appRouter.navigateTo('home'); }">Preview 3D</button>
+          <button class="btn btn-cyan" style="padding: 0.35rem 0.8rem; font-size: 0.8rem;" onclick="if(window.embedMgr){ window.appRouter.navigateTo('home'); document.getElementById('embed-section')?.scrollIntoView({behavior:'smooth'}); }">Embed Code</button>
+          <button style="background: none; border: none; color: #EF4444; cursor: pointer; padding: 0.3rem;" onclick="window.googleAuth.deleteAsset('${item.id}')" title="Delete Asset">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  deleteAsset(id) {
+    let assets = this.getStoredAssets();
+    assets = assets.filter(a => a.id !== id);
+    localStorage.setItem('joshstream_user_assets', JSON.stringify(assets));
+    this.renderDashboardAssets();
+    if (window.showToast) window.showToast('Asset removed from dashboard.', 'info');
   }
 }
 

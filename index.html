@@ -151,8 +151,7 @@
                 <button class="ctrl-btn" onclick="if(window.heroViewer) window.heroViewer.loadProductModel('chair')">Chair</button>
                 <button class="ctrl-btn" onclick="if(window.heroViewer) window.heroViewer.loadProductModel('watch')">Watch</button>
                 <button class="ctrl-btn" onclick="if(window.heroViewer) window.heroViewer.toggleWireframe()">Wireframe</button>
-                <button class="ctrl-btn" onclick="if(window.heroViewer) window.heroViewer.setMaterialColor('#00F0FF')">Cyan</button>
-                <button class="ctrl-btn" onclick="if(window.heroViewer) window.heroViewer.setMaterialColor('#8B5CF6')">Purple</button>
+                <button class="ctrl-btn" onclick="if(window.heroViewer) window.heroViewer.openARModal()">View in AR 📱</button>
               </div>
             </div>
           </div>
@@ -217,9 +216,10 @@
               <p class="section-desc" style="font-size: 1rem; margin-bottom: 1.5rem;">Select a sample product video or drop your footage below to simulate real-time AI spatial reconstruction.</p>
               
               <div id="sim-dropzone" class="dropzone-box">
+                <input type="file" id="sim-file-input" accept="video/mp4,video/mov,video/webm" style="display:none;">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" style="margin-bottom: 0.8rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                 <h4 style="font-size: 1.1rem; margin-bottom: 0.3rem;">Click to Upload Product Video</h4>
-                <p style="color: var(--text-muted); font-size: 0.85rem;">Supports MP4, MOV, WEBM (Max 500MB)</p>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Drag & drop or browse MP4, MOV, WEBM (Max 500MB)</p>
               </div>
 
               <p class="sample-videos-label">Or test with pre-loaded sample product videos:</p>
@@ -260,6 +260,91 @@
                 <p id="sim-progress-text" style="color: var(--accent-cyan); font-size: 0.88rem; margin-top: 0.8rem; font-weight: 500;">
                   Ready. Click a sample video to start AI reconstruction.
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- E-Commerce Embed Code Builder & Integration Section -->
+        <div id="embed-section" style="margin: 5rem 0;">
+          <div class="section-header">
+            <span class="section-tag">1-CLICK STORE EMBEDDING</span>
+            <h2 class="section-title">E-Commerce Embed Code Configurator</h2>
+            <p class="section-desc">Customize your 3D product viewer options and generate a copy-ready snippet for Shopify, WooCommerce, or Webflow.</p>
+          </div>
+
+          <div class="glass-card" style="padding: 2.5rem; display: grid; grid-template-columns: 1fr 1.2fr; gap: 2.5rem; align-items: start;">
+            <!-- Left Controls -->
+            <div>
+              <h4 style="color: #FFF; font-size: 1.2rem; margin-bottom: 1.2rem;">1. Customize Viewer Options</h4>
+              
+              <div class="form-group">
+                <label class="form-label">Target 3D Product Model</label>
+                <select id="embed-model-select" class="form-select">
+                  <option value="sneaker-3d-v1">Performance Air Sneaker (.GLTF)</option>
+                  <option value="eames-chair-3d">Eames Lounge Chair (.USDZ)</option>
+                  <option value="chronos-watch-3d">Chronos Smartwatch (.GLTF)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Viewer Color Theme</label>
+                <select id="embed-theme-select" class="form-select">
+                  <option value="dark">Dark Obsidian (Recommended)</option>
+                  <option value="glass">Glassmorphic Blur</option>
+                  <option value="light">Minimalist Light</option>
+                </select>
+              </div>
+
+              <div style="display: flex; gap: 1.5rem; margin-bottom: 1.2rem; flex-wrap: wrap;">
+                <label style="color: #FFF; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.92rem;">
+                  <input type="checkbox" id="embed-autorotate-check" checked style="accent-color: var(--accent-cyan);"> Auto-Rotate 360°
+                </label>
+                <label style="color: #FFF; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.92rem;">
+                  <input type="checkbox" id="embed-ar-check" checked style="accent-color: var(--accent-cyan);"> Enable WebAR Button
+                </label>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                  <label class="form-label">Width</label>
+                  <input type="text" id="embed-width-input" class="form-input" value="100%">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Height</label>
+                  <input type="text" id="embed-height-input" class="form-input" value="500px">
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Snippet & Platform Guides -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
+                <h4 style="color: #FFF; font-size: 1.2rem;">2. Generated Embed Code</h4>
+                <button id="copy-embed-code-btn" class="btn btn-cyan" style="padding: 0.45rem 1.1rem; font-size: 0.85rem;">
+                  📋 Copy Snippet
+                </button>
+              </div>
+
+              <pre id="embed-code-snippet" style="background: rgba(5, 11, 24, 0.9); border: 1px solid var(--border-glass); padding: 1.2rem; border-radius: 12px; color: var(--accent-cyan); font-family: monospace; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin-bottom: 1.5rem;"></pre>
+
+              <!-- Platform Integration Tabs -->
+              <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                <button class="platform-tab active" data-platform="shopify" style="background: none; border: none; color: #FFF; font-weight: 600; font-size: 0.88rem; cursor: pointer; padding: 0.4rem 0.8rem;">Shopify</button>
+                <button class="platform-tab" data-platform="woocommerce" style="background: none; border: none; color: var(--text-muted); font-weight: 600; font-size: 0.88rem; cursor: pointer; padding: 0.4rem 0.8rem;">WooCommerce</button>
+                <button class="platform-tab" data-platform="webflow" style="background: none; border: none; color: var(--text-muted); font-weight: 600; font-size: 0.88rem; cursor: pointer; padding: 0.4rem 0.8rem;">Webflow</button>
+              </div>
+
+              <div id="guide-shopify" class="platform-guide-content" style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6;">
+                <p><strong>Shopify Integration:</strong> Go to <em>Online Store → Themes → Edit Code</em>. Open <code>sections/main-product.liquid</code> and paste the copied snippet directly above your add-to-cart form.</p>
+              </div>
+
+              <div id="guide-woocommerce" class="platform-guide-content" style="display:none; color: var(--text-muted); font-size: 0.88rem; line-height: 1.6;">
+                <p><strong>WooCommerce Integration:</strong> Use the <em>Custom HTML Block</em> in your WooCommerce Product template or paste inside <code>woocommerce_single_product_summary</code> hook.</p>
+              </div>
+
+              <div id="guide-webflow" class="platform-guide-content" style="display:none; color: var(--text-muted); font-size: 0.88rem; line-height: 1.6;">
+                <p><strong>Webflow Integration:</strong> Drag an <em>Embed Component</em> into your product page layout in Webflow Designer, paste the snippet, and publish.</p>
               </div>
             </div>
           </div>
@@ -1037,33 +1122,8 @@
 
             <!-- Recent 3D Assets Table -->
             <div class="glass-card" style="padding: 2rem;">
-              <h4 style="font-size: 1.15rem; margin-bottom: 1.2rem; color: #FFF;">Your Converted 3D Assets</h4>
-              
-              <div style="display: flex; flex-direction: column; gap: 1rem;">
-                
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
-                  <div style="display: flex; align-items: center; gap: 0.8rem;">
-                    <div style="width: 36px; height: 36px; background: rgba(255, 42, 95, 0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.1rem;">👟</div>
-                    <div>
-                      <div style="font-weight: 600; font-size: 0.92rem; color: #FFF;">Performance Air Sneaker</div>
-                      <div style="font-size: 0.78rem; color: var(--text-muted);">GLTF • 3.2 MB • Ready</div>
-                    </div>
-                  </div>
-                  <button class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.78rem;" data-navigate="home">View 3D 👁️</button>
-                </div>
-
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
-                  <div style="display: flex; align-items: center; gap: 0.8rem;">
-                    <div style="width: 36px; height: 36px; background: rgba(255, 184, 0, 0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); font-size: 1.1rem;">🪑</div>
-                    <div>
-                      <div style="font-weight: 600; font-size: 0.92rem; color: #FFF;">Eames Modern Lounge Chair</div>
-                      <div style="font-size: 0.78rem; color: var(--text-muted);">USDZ • 5.1 MB • Ready</div>
-                    </div>
-                  </div>
-                  <button class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.78rem;" data-navigate="use-cases">View 3D 👁️</button>
-                </div>
-
-              </div>
+              <h4 style="font-size: 1.15rem; margin-bottom: 1.2rem; color: #FFF;">Your Converted 3D Assets Manager</h4>
+              <div id="dashboard-assets-list"></div>
             </div>
 
           </div>
@@ -1142,10 +1202,12 @@
   </footer>
 
   <!-- Application Scripts -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
   <script src="js/three-viewer.js"></script>
   <script src="js/auth-service.js"></script>
   <script src="js/video-converter.js"></script>
   <script src="js/pricing-calculator.js"></script>
+  <script src="js/embed-builder.js"></script>
   <script src="js/use-cases.js"></script>
   <script src="js/blog-modal.js"></script>
   <script src="js/contact-form.js"></script>

@@ -444,15 +444,37 @@ class Product3DViewer {
       ctx.lineWidth = 2;
       ctx.strokeRect(-80, -50, 160, 100);
       
-      ctx.strokeStyle = '#FF2A5F';
-      ctx.strokeRect(-50, -80, 100, 160);
-
       ctx.restore();
 
       angle += 0.01;
       requestAnimationFrame(draw);
     };
     draw();
+  }
+
+  openARModal() {
+    let modal = document.getElementById('webar-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'webar-modal';
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-box glass-card" style="max-width: 440px; text-align: center; padding: 2.2rem;">
+          <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">📱</div>
+          <h3 style="font-size: 1.4rem; color: #FFF; margin-bottom: 0.5rem;">Scan to View in Your Space</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Scan this QR code with your iOS (QuickLook USDZ) or Android (SceneViewer GLTF) device camera to place this 3D model in Augmented Reality.</p>
+          
+          <div style="background: #FFF; padding: 1.2rem; border-radius: 16px; display: inline-block; margin-bottom: 1.5rem; box-shadow: 0 0 25px rgba(255, 42, 95, 0.4);">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://josh-stream-web.vercel.app/%23webar" alt="WebAR QR Code" style="width: 180px; height: 180px; display: block;">
+          </div>
+
+          <div style="display: flex; gap: 0.8rem;">
+            <button class="btn btn-primary" style="flex: 1;" onclick="document.getElementById('webar-modal').remove()">Done</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
   }
 }
 
