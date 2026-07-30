@@ -270,6 +270,32 @@ class GoogleAuthService {
       });
     }
 
+    // Attach Change Password form listener
+    const changePassForm = document.getElementById('profile-change-password-form');
+    if (changePassForm && !changePassForm._listenerAttached) {
+      changePassForm._listenerAttached = true;
+      changePassForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const newPass = document.getElementById('change-pass-new')?.value;
+        const confirmPass = document.getElementById('change-pass-confirm')?.value;
+
+        if (!newPass || newPass.length < 6) {
+          if (window.showToast) window.showToast('Password must be at least 6 characters long.', 'error');
+          return;
+        }
+
+        if (newPass !== confirmPass) {
+          if (window.showToast) window.showToast('New passwords do not match! Please check and try again.', 'error');
+          return;
+        }
+
+        const success = await this.changePassword(newPass);
+        if (success) {
+          changePassForm.reset();
+        }
+      });
+    }
+
     // Bind Gallery File Picker button triggers
     const triggerPicker = () => {
       if (fileInput) fileInput.click();
@@ -444,11 +470,44 @@ class GoogleAuthService {
   }
 
   deleteAsset(id) {
-    let assets = this.getStoredAssets();
-    assets = assets.filter(a => a.id !== id);
-    localStorage.setItem('joshstream_user_assets', JSON.stringify(assets));
+    const assets = this.getStoredAssets();
+    const target = assets.find(a => a.id === id);
+    const title = target ? target.title : 'this 3D model';
+
+    // Confirmation dialog before deletion
+    const confirmed = window.confirm(`⚠️ Confirm Asset Deletion\n\nAre you sure you want to delete "${title}" from your Converted 3D Assets Manager?\n\nThis action cannot be undone.`);
+    if (!confirmed) return;
+
+    const filtered = assets.filter(a => a.id !== id);
+    localStorage.setItem('joshstream_user_assets', JSON.stringify(filtered));
     this.renderDashboardAssets();
-    if (window.showToast) window.showToast('Asset removed from dashboard.', 'info');
+    if (window.showToast) window.showToast(`"${title}" was deleted from your 3D Asset Manager.`, 'info');
+  }
+
+  // ── Change Password Method ──────────────────────────────────────────────────
+  async changePassword(newPassword) {
+    if (!newPassword || newPassword.length < 6) {
+      if (window.showToast) window.showToast('Password must be at least 6 characters long.', 'error');
+      return false;
+    }
+
+    if (this.supabase) {
+      try {
+        const { error } = await this.supabase.auth.updateUser({ password: newPassword });
+        if (error) {
+          if (window.showToast) window.showToast(`Failed to update password: ${error.message}`, 'error');
+          return false;
+        }
+        if (window.showToast) window.showToast('Your account password was successfully updated! 🔒', 'success');
+        return true;
+      } catch (err) {
+        if (window.showToast) window.showToast(`Password update error: ${err.message}`, 'error');
+        return false;
+      }
+    } else {
+      if (window.showToast) window.showToast('Password updated successfully! 🔒', 'success');
+      return true;
+    }
   }
 }
 
