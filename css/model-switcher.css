@@ -1,0 +1,56 @@
+/* ─── Model Switcher Strip Below Canvas ─────────────────────── */
+.model-switcher-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-top: 0.75rem;
+  background: rgba(15, 8, 18, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 0.28rem;
+  width: fit-content;
+  margin-inline: auto;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 42, 95, 0.12);
+}
+
+.model-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 1rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.model-pill:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.model-pill.active {
+  background: rgba(255, 42, 95, 0.2);
+  color: #FFF;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(255, 42, 95, 0.5);
+}
+
+.model-pill.active svg {
+  stroke: #FF2A5F;
+}
+
+.switcher-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
