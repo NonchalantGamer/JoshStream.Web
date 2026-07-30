@@ -92,6 +92,32 @@ class AuthHandler {
       });
     }
 
+    // ── Forgot Password Magic Link Reset Button ─────────────────────────────
+    const forgotBtn = document.getElementById('auth-forgot-password-btn');
+    if (forgotBtn) {
+      forgotBtn.addEventListener('click', async () => {
+        let email = document.getElementById('auth-email')?.value?.trim();
+
+        if (!email) {
+          email = prompt('Enter your registered email address to receive a password reset magic link:');
+          if (!email) return;
+        }
+
+        if (window.googleAuth) {
+          await window.googleAuth.sendPasswordResetEmail(email);
+        } else if (window.supabaseClient) {
+          const { error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin + '#profile'
+          });
+          if (error) {
+            if (window.showToast) window.showToast(`Password reset error: ${error.message}`, 'error');
+          } else {
+            if (window.showToast) window.showToast(`Password reset magic link sent to ${email}! Check your email inbox. 📧`, 'success');
+          }
+        }
+      });
+    }
+
     // ── Shopify OAuth button (kept as UX demo) ──────────────────────────────
     const shopifyBtn = document.getElementById('oauth-shopify-btn');
     if (shopifyBtn) {

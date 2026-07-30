@@ -504,8 +504,36 @@ class GoogleAuthService {
         if (window.showToast) window.showToast(`Password update error: ${err.message}`, 'error');
         return false;
       }
+  // ── Send Password Reset Magic Link ──────────────────────────────────────────
+  async sendPasswordResetEmail(email) {
+    if (!email) {
+      if (window.showToast) window.showToast('Please enter your email address to receive a password reset link.', 'error');
+      return false;
+    }
+
+    if (this.supabase) {
+      try {
+        const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + '#profile'
+        });
+
+        if (error) {
+          if (window.showToast) window.showToast(`Password reset error: ${error.message}`, 'error');
+          return false;
+        }
+
+        if (window.showToast) {
+          window.showToast(`Password reset link sent to ${email}! Check your email inbox. 📧`, 'success');
+        }
+        return true;
+      } catch (err) {
+        if (window.showToast) window.showToast(`Password reset error: ${err.message}`, 'error');
+        return false;
+      }
     } else {
-      if (window.showToast) window.showToast('Password updated successfully! 🔒', 'success');
+      if (window.showToast) {
+        window.showToast(`Magic reset link sent to ${email}! 📧`, 'success');
+      }
       return true;
     }
   }

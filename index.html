@@ -1053,7 +1053,12 @@
             </div>
 
             <div class="form-group" style="text-align: left;">
-              <label class="form-label">Password</label>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <label class="form-label" style="margin-bottom: 0;">Password</label>
+                <button type="button" id="auth-forgot-password-btn" style="background: none; border: none; color: var(--accent-cyan); font-size: 0.82rem; cursor: pointer; text-decoration: underline; font-weight: 500;">
+                  Forgot Password?
+                </button>
+              </div>
               <div class="password-input-wrap">
                 <input type="password" id="auth-password" class="form-input" placeholder="••••••••••••" required>
                 <button type="button" id="auth-password-toggle" class="password-toggle-btn" aria-label="Toggle password visibility" title="Show / Hide password">
