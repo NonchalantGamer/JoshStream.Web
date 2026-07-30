@@ -231,8 +231,115 @@ h1, h2, h3, h4, h5, h6 {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 2.2rem;
+  gap: 2.8rem;
   list-style: none;
+}
+
+/* Centered Navigation Links */
+.nav-links-centered {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0;
+}
+
+/* Desktop Menu Toggle Button Beside Logo */
+.desktop-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFF;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.desktop-menu-btn:hover,
+.desktop-menu-btn.active {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+}
+
+/* Desktop Mega Navigation Drawer */
+.desktop-menu-drawer {
+  position: fixed;
+  top: calc(1rem + 66px + 0.6rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  width: min(92%, 1100px);
+  background: rgba(12, 6, 16, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 240, 255, 0.15);
+  padding: 2rem 2.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 999;
+}
+
+.desktop-menu-drawer.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.desktop-drawer-content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.drawer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.drawer-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--accent-cyan);
+  margin-bottom: 0.4rem;
+}
+
+.drawer-link {
+  text-decoration: none;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.drawer-link:hover {
+  background: rgba(0, 240, 255, 0.08);
+  border-color: rgba(0, 240, 255, 0.3);
+  transform: translateX(4px);
+}
+
+.drawer-link-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #FFF;
+  margin-bottom: 0.15rem;
+}
+
+.drawer-link-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
 }
 
 /* Fluid Hover Text Animation — dual-layer character lift */

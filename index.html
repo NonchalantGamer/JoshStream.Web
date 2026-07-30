@@ -41,23 +41,34 @@
   <!-- Sticky Navbar -->
   <header>
     <nav class="navbar" aria-label="Main Navigation">
-      <div class="nav-brand-wrap" style="display: flex; align-items: center; gap: 2rem;">
+      <!-- Left: Logo + Desktop Navigation Drawer Button -->
+      <div class="nav-left-group" style="display: flex; align-items: center; gap: 1rem;">
         <a class="brand-logo" data-navigate="home">
-          <div class="brand-icon" aria-hidden="true">
+          <div class="brand-icon" aria-hidden="true" style="width: 33px; height: 33px; padding: 2px; border-radius: 9px;">
             <img src="./logo.png" alt="JoshStream Web Logo" class="brand-icon-img">
           </div>
-          <span class="brand-name">JoshStream<span class="brand-dot-web">.Web</span></span>
+          <span class="brand-name" style="font-size: 1.35rem;">JoshStream<span class="brand-dot-web">.Web</span></span>
         </a>
 
-        <!-- Sleek Nav Bar Positioned Right Beside Brand Logo -->
-        <ul class="nav-links">
-          <li><a class="nav-link" data-navigate="features" data-text="Features"><span>Features</span></a></li>
-          <li><a class="nav-link" onclick="document.getElementById('sim-section')?.scrollIntoView({behavior:'smooth'})" data-text="Upload Sandbox"><span>Upload Sandbox</span></a></li>
-          <li><a class="nav-link" data-navigate="pricing" data-text="Pricing"><span>Pricing</span></a></li>
-          <li><a class="nav-link" data-navigate="profile" id="nav-profile-link" data-text="My Profile" style="display:none;"><span>My Profile</span></a></li>
-        </ul>
+        <!-- Desktop Menu Toggle Button beside Icon -->
+        <button id="desktop-menu-btn" class="desktop-menu-btn" aria-label="Explore All Sections">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+          <span>Explore</span>
+        </button>
       </div>
 
+      <!-- Center: Perfectly Centered Navigation (Home, Features, Pricing) -->
+      <ul class="nav-links nav-links-centered">
+        <li><a class="nav-link active" data-navigate="home" data-text="Home"><span>Home</span></a></li>
+        <li><a class="nav-link" data-navigate="features" data-text="Features"><span>Features</span></a></li>
+        <li><a class="nav-link" data-navigate="pricing" data-text="Pricing"><span>Pricing</span></a></li>
+      </ul>
+
+      <!-- Right: Action Buttons -->
       <div class="nav-actions">
         <button class="btn btn-secondary" data-navigate="auth">Sign In</button>
         <button class="btn btn-cyan" data-plan="pro">Start Free Trial ➔</button>
@@ -72,6 +83,59 @@
         </svg>
       </button>
     </nav>
+
+    <!-- Desktop Navigation Mega Drawer (Accessible Anytime via "Explore ☰" beside Logo) -->
+    <div id="desktop-menu-drawer" class="desktop-menu-drawer">
+      <div class="desktop-drawer-content">
+        <div class="drawer-col">
+          <span class="drawer-tag">CORE PLATFORM</span>
+          <a class="drawer-link" data-navigate="features">
+            <div class="drawer-link-title">⚡ Spatial AI Features</div>
+            <div class="drawer-link-desc">Neural keyframing & Gaussian splatting</div>
+          </a>
+          <a class="drawer-link" onclick="document.getElementById('sim-section')?.scrollIntoView({behavior:'smooth'}); document.getElementById('desktop-menu-drawer')?.classList.remove('active');">
+            <div class="drawer-link-title">📤 Upload Sandbox</div>
+            <div class="drawer-link-desc">Convert video to GLTF/USDZ 3D models</div>
+          </a>
+          <a class="drawer-link" data-navigate="pricing">
+            <div class="drawer-link-title">💎 Pricing & Credit Calculator</div>
+            <div class="drawer-link-desc">Transparent credit tiers & annual savings</div>
+          </a>
+        </div>
+
+        <div class="drawer-col">
+          <span class="drawer-tag">SOLUTIONS & USE CASES</span>
+          <a class="drawer-link" data-navigate="use-cases">
+            <div class="drawer-link-title">👟 Fashion & Footwear 3D</div>
+            <div class="drawer-link-desc">94% conversion lift for sneakers & apparel</div>
+          </a>
+          <a class="drawer-link" data-navigate="use-cases">
+            <div class="drawer-link-title">🛋️ Furniture & Home AR</div>
+            <div class="drawer-link-desc">40% return reduction with true scale</div>
+          </a>
+          <a class="drawer-link" data-navigate="use-cases">
+            <div class="drawer-link-title">⌚ Electronics & Luxury</div>
+            <div class="drawer-link-desc">4K texture detail & material reflections</div>
+          </a>
+        </div>
+
+        <div class="drawer-col">
+          <span class="drawer-tag">COMPANY & SUPPORT</span>
+          <a class="drawer-link" data-navigate="about">
+            <div class="drawer-link-title">🏢 About JoshStream Web</div>
+            <div class="drawer-link-desc">Our spatial commerce AI mission</div>
+          </a>
+          <a class="drawer-link" data-navigate="blog">
+            <div class="drawer-link-title">📰 Blog & Benchmarks</div>
+            <div class="drawer-link-desc">Latest research & retail ROI insights</div>
+          </a>
+          <a class="drawer-link" data-navigate="contact">
+            <div class="drawer-link-title">📞 Talk to Sales</div>
+            <div class="drawer-link-desc">Enterprise APIs & custom integrations</div>
+          </a>
+        </div>
+      </div>
+    </div>
 
     <!-- Mobile Slide-Down Drawer -->
     <div id="mobile-nav" class="mobile-nav">

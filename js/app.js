@@ -33,6 +33,24 @@ class AppRouter {
       }
     });
 
+    // Handle Desktop Menu Drawer Toggle ("Explore ☰" button beside logo)
+    const desktopMenuBtn = document.getElementById('desktop-menu-btn');
+    const desktopDrawer = document.getElementById('desktop-menu-drawer');
+    if (desktopMenuBtn && desktopDrawer) {
+      desktopMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        desktopDrawer.classList.toggle('active');
+        desktopMenuBtn.classList.toggle('active');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!desktopDrawer.contains(e.target) && !desktopMenuBtn.contains(e.target)) {
+          desktopDrawer.classList.remove('active');
+          desktopMenuBtn.classList.remove('active');
+        }
+      });
+    }
+
     // Handle Mobile Menu Toggle & Auto-Close on Navigation
     if (this.mobileMenuBtn && this.mobileNav) {
       this.mobileMenuBtn.addEventListener('click', (e) => {
