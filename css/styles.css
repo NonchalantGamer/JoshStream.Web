@@ -191,16 +191,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .brand-icon {
-  width: 48px;
-  height: 48px;
-  background: rgba(5, 11, 24, 0.92);
+  width: 44px;
+  height: 44px;
+  background: #FFFFFF;
   border-radius: 12px;
-  border: 1px solid rgba(0, 240, 255, 0.4);
+  border: 1.5px solid rgba(255, 69, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.3), inset 0 0 10px rgba(255, 42, 95, 0.2);
+  padding: 3px;
+  box-shadow: 0 0 16px rgba(255, 69, 0, 0.45);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
   will-change: transform, box-shadow;
   flex-shrink: 0;
@@ -213,35 +213,19 @@ h1, h2, h3, h4, h5, h6 {
   object-fit: contain;
   object-position: center;
   display: block;
-  border-radius: 6px;
-  /* High-contrast 3D wireframe filter pipeline:
-     1. invert(1) - flips white background to dark and lines to bright white
-     2. brightness(1.85) & contrast(220%) - makes every single 3D mesh line razor-sharp
-     3. Dual drop-shadows - electric cyan inner line glow + crimson outer spatial halo
-  */
-  filter:
-    invert(1)
-    brightness(1.85)
-    contrast(220%)
-    drop-shadow(0 0 4px #00F0FF)
-    drop-shadow(0 0 10px rgba(255, 42, 95, 0.6));
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+  border-radius: 8px;
+  filter: contrast(105%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .brand-logo:hover .brand-icon {
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 25px rgba(0, 240, 255, 0.6), 0 0 15px rgba(255, 42, 95, 0.4);
+  border-color: #FF4500;
+  box-shadow: 0 0 25px rgba(255, 69, 0, 0.75), 0 0 12px rgba(255, 184, 0, 0.5);
   transform: scale(1.08) rotate(-2deg);
 }
 
 .brand-logo:hover .brand-icon-img {
-  transform: scale(1.08);
-  filter:
-    invert(1)
-    brightness(2.1)
-    contrast(250%)
-    drop-shadow(0 0 8px #00F0FF)
-    drop-shadow(0 0 16px rgba(255, 42, 95, 0.8));
+  transform: scale(1.05);
 }
 
 .nav-links {
