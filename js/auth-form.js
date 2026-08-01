@@ -110,7 +110,12 @@ class AuthHandler {
             redirectTo: window.location.origin + '#profile'
           });
           if (error) {
-            if (window.showToast) window.showToast(`Password reset error: ${error.message}`, 'error');
+            const errorMessage = (error.message || '').toLowerCase();
+            const message = errorMessage.includes('user not found') || errorMessage.includes('account does not exist')
+              ? 'That account does not exist.'
+              : `Password reset error: ${error.message}`;
+
+            if (window.showToast) window.showToast(message, 'error');
           } else {
             if (window.showToast) window.showToast(`Password reset magic link sent to ${email}! Check your email inbox. 📧`, 'success');
           }

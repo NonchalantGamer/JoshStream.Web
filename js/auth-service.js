@@ -511,6 +511,17 @@ class GoogleAuthService {
   }
 
   // ── Send Password Reset Magic Link ──────────────────────────────────────────
+  _formatPasswordResetError(error) {
+    const message = error?.message || '';
+    const normalized = message.toLowerCase();
+
+    if (normalized.includes('user not found') || normalized.includes('account does not exist')) {
+      return 'That account does not exist.';
+    }
+
+    return message || 'Password reset failed.';
+  }
+
   async sendPasswordResetEmail(email) {
     if (!email) {
       if (window.showToast) window.showToast('Please enter your email address to receive a password reset link.', 'error');
@@ -524,7 +535,7 @@ class GoogleAuthService {
         });
 
         if (error) {
-          if (window.showToast) window.showToast(`Password reset error: ${error.message}`, 'error');
+          if (window.showToast) window.showToast(this._formatPasswordResetError(error), 'error');
           return false;
         }
 
@@ -533,7 +544,7 @@ class GoogleAuthService {
         }
         return true;
       } catch (err) {
-        if (window.showToast) window.showToast(`Password reset error: ${err.message}`, 'error');
+        if (window.showToast) window.showToast(this._formatPasswordResetError(err), 'error');
         return false;
       }
     } else {
