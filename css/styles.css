@@ -574,12 +574,17 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .hero-headline {
   font-size: 3.5rem;
   line-height: 1.1;
   margin-bottom: 1.5rem;
+  max-width: 100%;
+  width: 100%;
 }
 
 .hero-subhead {
@@ -587,6 +592,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-muted);
   margin-bottom: 2.5rem;
   max-width: 540px;
+  width: 100%;
 }
 
 .hero-cta-group {
@@ -594,6 +600,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 1.25rem;
   margin-bottom: 2.5rem;
+  width: 100%;
 }
 
 .hero-badge-group {
@@ -1554,6 +1561,8 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 868px) {
   .nav-links, .nav-actions { display: none; }
+  .desktop-menu-btn { display: none; }
+  .desktop-menu-drawer { display: none !important; }
   .mobile-menu-btn { display: flex; }
 
   /* Floating Navbar on Tablet/Mobile */
@@ -1562,6 +1571,21 @@ h1, h2, h3, h4, h5, h6 {
     width: calc(100% - 1.5rem);
     height: 60px;
     padding: 0 1.2rem;
+  }
+
+  .brand-logo {
+    gap: 0.55rem;
+    min-width: 0;
+  }
+
+  .brand-name {
+    font-size: 1.15rem !important;
+    white-space: nowrap;
+  }
+
+  .brand-icon {
+    width: 36px;
+    height: 36px;
   }
 
   /* Single Column Profile Dashboard Layout on Mobile */
@@ -1576,35 +1600,116 @@ h1, h2, h3, h4, h5, h6 {
     --header-height: 70px;
   }
 
-  .navbar { padding: 0 1rem; }
-  
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  .navbar {
+    padding: 0 1rem;
+    border-radius: 20px;
+  }
+
   .container { padding: 0 1rem; }
-  
-  .hero-headline { font-size: 2.2rem; line-height: 1.15; }
-  .hero-subhead { font-size: 1.05rem; margin-bottom: 1.8rem; }
+
+  .hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    padding: 2rem 0 3rem 0;
+    min-width: 0;
+    width: 100%;
+    overflow-x: clip;
+  }
+
+  .hero-grid > * {
+    min-width: 0;
+  }
+
+  .hero-content {
+    align-items: stretch;
+    width: min(100%, calc(100vw - 2rem)) !important;
+    max-width: min(100%, calc(100vw - 2rem)) !important;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .hero-headline {
+    font-size: clamp(2.3rem, 9vw, 3.5rem);
+    line-height: 1.1;
+    max-width: min(100%, calc(100vw - 2rem)) !important;
+    width: min(100%, calc(100vw - 2rem)) !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    min-width: 0;
+  }
+
+  .hero-subhead {
+    font-size: 1.05rem;
+    margin-bottom: 1.8rem;
+    max-width: min(100%, calc(100vw - 2rem)) !important;
+    width: min(100%, calc(100vw - 2rem)) !important;
+  }
+
+  .hero-cta-group,
+  .hero-badge-group {
+    max-width: min(100%, calc(100vw - 2rem)) !important;
+    width: min(100%, calc(100vw - 2rem)) !important;
+  }
+
   .section-title { font-size: 2rem; }
   .section-desc { font-size: 1rem; }
+
+  .section-tag {
+    font-size: 0.73rem;
+    padding: 0.35rem 0.85rem;
+  }
 
   .hero-cta-group {
     flex-direction: column;
     width: 100%;
     gap: 0.8rem;
+    align-items: stretch;
   }
-  
+
   .hero-cta-group .btn {
     width: 100%;
-    padding: 0.85rem 1.5rem;
+    padding: 0.9rem 1.2rem;
     font-size: 1rem;
     min-height: 48px;
   }
 
   .hero-badge-group {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 0.8rem;
   }
 
   .canvas-card {
     height: 340px;
+  }
+
+  .canvas-floating-badge {
+    top: 0.9rem;
+    right: 0.9rem;
+    font-size: 0.66rem;
+    padding: 0.28rem 0.6rem;
+  }
+
+  .model-switcher-strip {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+    border-radius: 18px;
+    scrollbar-width: none;
+  }
+
+  .model-switcher-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .model-pill {
+    flex-shrink: 0;
   }
 
   .steps-grid, .features-grid, .benefits-grid, .pricing-cards-grid, .blog-grid {
@@ -1878,12 +1983,36 @@ h1, h2, h3, h4, h5, h6 {
 /* ─── Mobile Viewer Toolbar ─────────────────────────────────── */
 @media (max-width: 640px) {
   .viewer-toolbar {
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    padding: 0.75rem;
+  }
+
+  .viewer-model-tabs {
+    width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+  }
+
+  .viewer-model-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .viewer-toolbar-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .viewer-tab {
-    padding: 0.3rem 0.55rem;
+    padding: 0.35rem 0.6rem;
     font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .viewer-ar-btn {
+    flex: 1;
+    justify-content: center;
   }
 }
