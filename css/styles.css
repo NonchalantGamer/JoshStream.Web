@@ -51,6 +51,7 @@ svg {
 
 html {
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
   font-family: var(--font-body);
   background-color: var(--bg-dark);
   color: var(--text-main);
@@ -61,7 +62,9 @@ body {
   min-height: 100vh;
   line-height: 1.6;
   background: radial-gradient(circle at 50% 0%, #3A0C1A 0%, #0F070A 70%);
-  background-attachment: fixed;
+  background-attachment: scroll;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Typography */

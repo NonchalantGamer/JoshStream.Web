@@ -25,15 +25,19 @@ class AppRouter {
 
     this.initScrollReveal();
 
-    // Handle Navbar Scroll effect
+    // Handle Navbar Scroll effect with rAF to keep mobile scrolling fluid
     const navbar = document.querySelector('.navbar');
+    let scrollTick = false;
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 40) {
-        navbar?.classList.add('scrolled');
-      } else {
-        navbar?.classList.remove('scrolled');
+      if (!scrollTick) {
+        window.requestAnimationFrame(() => {
+          const isScrolled = window.scrollY > 40;
+          navbar?.classList.toggle('scrolled', isScrolled);
+          scrollTick = false;
+        });
+        scrollTick = true;
       }
-    });
+    }, { passive: true });
 
     // Handle Desktop Menu Drawer Toggle ("Explore ☰" button beside logo)
     const desktopMenuBtn = document.getElementById('desktop-menu-btn');
