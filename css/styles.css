@@ -43,6 +43,12 @@
   padding: 0;
 }
 
+svg {
+  color: #FFF !important;
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
 html {
   scroll-behavior: smooth;
   font-family: var(--font-body);
@@ -620,7 +626,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .badge-item svg {
-  color: var(--accent-cyan);
+  color: #FFF;
 }
 
 /* 3D Canvas Preview Window */
@@ -680,9 +686,9 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   top: 1.25rem;
   right: 1.25rem;
-  background: rgba(0, 240, 255, 0.15);
-  border: 1px solid var(--accent-cyan);
-  color: var(--accent-cyan);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFF;
   font-size: 0.75rem;
   font-weight: 700;
   padding: 0.3rem 0.8rem;
@@ -695,9 +701,9 @@ h1, h2, h3, h4, h5, h6 {
 .pulse-dot {
   width: 7px;
   height: 7px;
-  background: var(--accent-cyan);
+  background: #FFF;
   border-radius: 50%;
-  box-shadow: 0 0 10px var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.55);
   animation: pulse 1.5s infinite;
 }
 
@@ -1084,7 +1090,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .feature-item svg {
-  color: var(--accent-cyan);
+  color: #FFF;
   flex-shrink: 0;
 }
 

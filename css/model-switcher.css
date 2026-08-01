@@ -37,28 +37,28 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* Sneaker / Chair / Watch active — crimson tint */
+/* Sneaker / Chair / Watch active — neutral state */
 .model-pill.active {
-  background: rgba(255, 42, 95, 0.2);
+  background: rgba(255, 255, 255, 0.12);
   color: #FFF;
   font-weight: 600;
-  box-shadow: inset 0 0 0 1px rgba(255, 42, 95, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
 }
 
 .model-pill.active svg {
-  stroke: #FF2A5F;
+  stroke: #FFF;
 }
 
-/* Vector pill active — distinct cyan glow to signal wireframe mode */
+/* Vector pill active — neutral state */
 #vector-pill.active {
-  background: rgba(0, 240, 255, 0.18);
-  color: #00F0FF;
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFF;
   font-weight: 600;
-  box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.55), 0 0 10px rgba(0, 240, 255, 0.25);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
 }
 
 #vector-pill.active svg {
-  stroke: #00F0FF;
+  stroke: #FFF;
 }
 
 .switcher-divider {
@@ -91,14 +91,14 @@
 }
 
 .model-pill.active {
-  background: rgba(255, 42, 95, 0.2);
+  background: rgba(255, 255, 255, 0.12);
   color: #FFF;
   font-weight: 600;
-  box-shadow: inset 0 0 0 1px rgba(255, 42, 95, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
 }
 
 .model-pill.active svg {
-  stroke: #FF2A5F;
+  stroke: #FFF;
 }
 
 .switcher-divider {

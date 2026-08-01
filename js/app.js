@@ -23,6 +23,8 @@ class AppRouter {
       });
     });
 
+    this.initScrollReveal();
+
     // Handle Navbar Scroll effect
     const navbar = document.querySelector('.navbar');
     window.addEventListener('scroll', () => {
@@ -118,6 +120,42 @@ class AppRouter {
     if (viewId === 'home' && window.heroViewer) {
       setTimeout(() => window.heroViewer.onResize(), 100);
     }
+  }
+
+  initScrollReveal() {
+    if (!window.gsap || !window.ScrollTrigger) {
+      return;
+    }
+
+    window.gsap.registerPlugin(window.ScrollTrigger);
+
+    const revealTargets = document.querySelectorAll(
+      '.section-title, .section-desc, .step-card, .glass-card, .pricing-card, .blog-card, .feature-card, .benefits-grid > *, .steps-grid > *, .features-grid > *, .pricing-cards-grid > *, .blog-grid > *, .contact-grid > *'
+    );
+
+    revealTargets.forEach((element, index) => {
+      window.gsap.fromTo(
+        element,
+        {
+          opacity: 0,
+          y: 36,
+          scale: 0.985
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.72,
+          ease: 'power2.out',
+          delay: index * 0.02,
+          scrollTrigger: {
+            trigger: element,
+            start: 'top 88%',
+            once: true
+          }
+        }
+      );
+    });
   }
 
   initSubsystems() {
