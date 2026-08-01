@@ -1390,6 +1390,14 @@ h1, h2, h3, h4, h5, h6 {
   transition: all 0.2s ease;
 }
 
+.oauth-btn img {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  display: block;
+}
+
 .oauth-btn:hover {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.25);
